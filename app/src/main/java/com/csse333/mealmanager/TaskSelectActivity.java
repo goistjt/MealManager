@@ -51,7 +51,6 @@ public class TaskSelectActivity extends AppCompatActivity {
             //"http://meal-manager.csse.srose-hulman.edu/Recipe"
             ServerConnections serverConnections = new ServerConnections();
             mRecipes = serverConnections.getRequest(query);
-            mAuthTask = null;
             return true;
         }
 

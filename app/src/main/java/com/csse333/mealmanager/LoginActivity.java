@@ -25,6 +25,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -254,6 +257,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         private final String mEmail;
         private final String mPassword;
+        private String mReturnedEmail;
 
         UserLoginTask(String email, String password) {
             mEmail = email;
@@ -264,22 +268,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
+            String query = String.format("Login?email=%s&pw=%s", mEmail, mPassword);
+
+            //"http://meal-manager.csse.srose-hulman.edu/Login?"
+            ServerConnections serverConnections = new ServerConnections();
+            JSONObject jo = serverConnections.getRequest(query);
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
+                mReturnedEmail = jo.getString("email");
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
             return true;
         }
 
@@ -287,8 +286,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
-            if (success) {
+            if (success & mReturnedEmail.equals(mEmail)) {
                 Intent intent = new Intent(LoginActivity.this, TaskSelectActivity.class);
                 intent.putExtra("user_id", mEmail);
                 startActivity(intent);
