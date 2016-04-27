@@ -36,6 +36,8 @@
         </activity>
         <activity android:name=".DineInActivity">
         </activity>
+        <activity android:name=".DineOutActivity">
+        </activity>
     </application>
 
 </manifest>

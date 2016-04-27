@@ -67,9 +67,9 @@ public class DineOutActivity extends ListActivity {
                 for (int i = 0; i < recipes.length(); i++) {
                     JSONObject r = recipes.getJSONObject(i);
 
-                    String name = r.getString("name");
+                    String name = r.getString("rest_name");
                     String time = r.getString("phone");
-                    String type = r.getString("type");
+                    String type = r.getString("food_type");
                     int id = r.getInt("rest_id");
 
                     // tmp hashmap for single contact

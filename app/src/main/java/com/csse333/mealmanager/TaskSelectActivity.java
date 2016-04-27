@@ -103,7 +103,7 @@ public class TaskSelectActivity extends AppCompatActivity {
             mDineOutTask = null;
 
             if (success) {
-                Intent intent = new Intent(TaskSelectActivity.this, DineInActivity.class);
+                Intent intent = new Intent(TaskSelectActivity.this, DineOutActivity.class);
                 intent.putExtra("user_id", mEmail);
                 intent.putExtra("restaurants", mReturnedJSON.toString());
                 startActivity(intent);
