@@ -18,6 +18,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -194,24 +198,33 @@ public class RegistrationActivity extends AppCompatActivity {
 
         private final String mEmail;
         private final String mPassword;
+        private final String mName;
 
         UserRegisterTask(String email, String password, String name) {
             mEmail = email;
             mPassword = password;
+            mName = name;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt registration against our DB.
-
+            //params name, email, pw
+            String charset = "UTF-8";
+            String query = "";
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
+                query = String.format("Register?name=%s&email=%s&pw=%s",
+                        URLEncoder.encode(mName, charset),
+                        URLEncoder.encode(mEmail, charset),
+                        URLEncoder.encode(mPassword, charset));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
 
-            // TODO: register the new account here.
+            //"http://meal-manager.csse.srose-hulman.edu/Register?" + params
+            ServerConnections sc = new ServerConnections();
+            sc.postRequest(query);
+
             return true;
         }
 
