@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -99,13 +100,18 @@ public class DineOutActivity extends ListActivity {
             /**
              * Updating parsed JSON data into ListView
              * */
-            ListAdapter adapter = new SimpleAdapter(
-                    DineOutActivity.this,
-                    restList,
-                    R.layout.activity_dine_out,
-                    new String[]{"name", "phone", "type"},
-                    new int[]{R.id.name, R.id.phone, R.id.type});
-            setListAdapter(adapter);
+            if (restList.size() == 0) {
+                TextView tv = (TextView) findViewById(R.id.empty);
+                tv.setText(R.string.empty_restaurant_list);
+            } else {
+                ListAdapter adapter = new SimpleAdapter(
+                        DineOutActivity.this,
+                        restList,
+                        R.layout.activity_dine_out,
+                        new String[]{"name", "phone", "type"},
+                        new int[]{R.id.name, R.id.phone, R.id.type});
+                setListAdapter(adapter);
+            }
         }
 
     }

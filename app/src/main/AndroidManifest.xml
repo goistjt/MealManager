@@ -38,6 +38,8 @@
         </activity>
         <activity android:name=".DineOutActivity">
         </activity>
+        <activity android:name=".ShoppingListActivity">
+        </activity>
     </application>
 
 </manifest>

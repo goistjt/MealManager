@@ -16,14 +16,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class DineInActivity extends ListActivity {
+public class ShoppingListActivity extends ListActivity {
 
     private ProgressDialog pDialog;
     private String mEmail;
-    private JSONObject mRecipes;
+    private JSONObject mIngredients;
     private ListView mListView;
-    ArrayList<HashMap<String, Object>> recipeList;
-    JSONArray recipes = null;
+    ArrayList<HashMap<String, Object>> ingredientList;
+    JSONArray ingredients = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +34,12 @@ public class DineInActivity extends ListActivity {
         assert extras != null;
         mEmail = extras.getString("user_id");
         try {
-            mRecipes = new JSONObject(getIntent().getStringExtra("recipes"));
+            mIngredients = new JSONObject(getIntent().getStringExtra("ingredients"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        recipeList = new ArrayList<>();
+        ingredientList = new ArrayList<>();
         mListView = getListView();
 
         new getRecipes().execute();
@@ -51,7 +51,7 @@ public class DineInActivity extends ListActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             // Showing progress dialog
-            pDialog = new ProgressDialog(DineInActivity.this);
+            pDialog = new ProgressDialog(ShoppingListActivity.this);
             pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
             pDialog.show();
@@ -62,28 +62,22 @@ public class DineInActivity extends ListActivity {
         protected Void doInBackground(Void... arg0) {
             try {
                 // Getting JSON Array node
-                recipes = mRecipes.getJSONArray("Recipes");
+                ingredients = mIngredients.getJSONArray("Shopping List");
 
                 // looping through All Contacts
-                for (int i = 0; i < recipes.length(); i++) {
-                    JSONObject r = recipes.getJSONObject(i);
+                for (int i = 0; i < ingredients.length(); i++) {
+                    JSONObject r = ingredients.getJSONObject(i);
 
                     String name = r.getString("name");
-                    String time = r.getString("total_time");
-                    String type = r.getString("type");
-                    int id = r.getInt("recipe_id");
 
                     // tmp hashmap for single contact
                     HashMap<String, Object> recipe = new HashMap<>();
 
                     // adding each child node to HashMap key => value
                     recipe.put("name", name);
-                    recipe.put("total time", time);
-                    recipe.put("type", type);
-                    recipe.put("recipe_id", id);
 
                     // adding contact to contact list
-                    recipeList.add(recipe);
+                    ingredientList.add(recipe);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -100,16 +94,16 @@ public class DineInActivity extends ListActivity {
             /**
              * Updating parsed JSON data into ListView
              * */
-            if (recipeList.size() == 0) {
+            if (ingredientList.size() == 0) {
                 TextView tv = (TextView) findViewById(R.id.empty);
-                tv.setText(R.string.empty_recipe_list);
+                tv.setText(R.string.empty_shopping_list);
             } else {
                 ListAdapter adapter = new SimpleAdapter(
-                        DineInActivity.this,
-                        recipeList,
-                        R.layout.activity_dine_in,
-                        new String[]{"name", "total time", "type"},
-                        new int[]{R.id.name, R.id.total_time, R.id.type});
+                        ShoppingListActivity.this,
+                        ingredientList,
+                        R.layout.activity_shopping_list,
+                        new String[]{"name"},
+                        new int[]{R.id.name});
                 setListAdapter(adapter);
             }
         }

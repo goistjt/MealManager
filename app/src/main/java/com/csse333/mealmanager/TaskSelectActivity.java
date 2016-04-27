@@ -15,10 +15,9 @@ import java.net.URLEncoder;
 public class TaskSelectActivity extends AppCompatActivity {
 
     private String mEmail;
-    private Button mDineIn;
-    private Button mDineOut;
     private DineInTask mDineInTask = null;
     private DineOutTask mDineOutTask = null;
+    private ShoppingListTask mShoppingListTask = null;
     private JSONObject mReturnedJSON = null;
 
     @Override
@@ -31,8 +30,8 @@ public class TaskSelectActivity extends AppCompatActivity {
         mEmail = extras.getString("user_id");
         System.out.println(mEmail);
 
-        mDineIn = (Button) findViewById(R.id.dine_in_button);
-        mDineIn.setOnClickListener(new View.OnClickListener() {
+        Button dineIn = (Button) findViewById(R.id.dine_in_button);
+        dineIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDineInTask = new DineInTask();
@@ -40,12 +39,21 @@ public class TaskSelectActivity extends AppCompatActivity {
             }
         });
 
-        mDineOut = (Button) findViewById(R.id.dine_out_button);
-        mDineOut.setOnClickListener(new View.OnClickListener() {
+        Button dineOut = (Button) findViewById(R.id.dine_out_button);
+        dineOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDineOutTask = new DineOutTask();
                 mDineOutTask.execute((Void) null);
+            }
+        });
+
+        Button shoppingList = (Button) findViewById(R.id.shopping_list_button);
+        shoppingList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mShoppingListTask = new ShoppingListTask();
+                mShoppingListTask.execute((Void) null);
             }
         });
     }
@@ -106,6 +114,39 @@ public class TaskSelectActivity extends AppCompatActivity {
                 Intent intent = new Intent(TaskSelectActivity.this, DineOutActivity.class);
                 intent.putExtra("user_id", mEmail);
                 intent.putExtra("restaurants", mReturnedJSON.toString());
+                startActivity(intent);
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mDineOutTask = null;
+        }
+    }
+
+    public class ShoppingListTask extends AsyncTask<Void, Void, Boolean> {
+
+        ShoppingListTask() {
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            String query = "ShoppingList";
+
+            //"http://meal-manager.csse.srose-hulman.edu/ShoppingList"
+            ServerConnections serverConnections = new ServerConnections();
+            mReturnedJSON = serverConnections.getRequest(query);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mDineOutTask = null;
+
+            if (success) {
+                Intent intent = new Intent(TaskSelectActivity.this, ShoppingListActivity.class);
+                intent.putExtra("user_id", mEmail);
+                intent.putExtra("ingredients", mReturnedJSON.toString());
                 startActivity(intent);
             }
         }

@@ -20,4 +20,7 @@
     <string name="view_shopping_list">View Shopping List</string>
     <string name="dine_in">Dine In</string>
     <string name="dine_out">Dine Out</string>
+    <string name="empty_shopping_list">Nothing on your shopping list!</string>
+    <string name="empty_recipe_list">No recipes match your search!</string>
+    <string name="empty_restaurant_list">No restaurants match your search!</string>
 </resources>
