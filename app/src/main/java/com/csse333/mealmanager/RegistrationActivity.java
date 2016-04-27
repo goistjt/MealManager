@@ -18,6 +18,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -199,6 +202,7 @@ public class RegistrationActivity extends AppCompatActivity {
         private final String mEmail;
         private final String mPassword;
         private final String mName;
+        private String mReturnedEmail;
 
         UserRegisterTask(String email, String password, String name) {
             mEmail = email;
@@ -223,7 +227,12 @@ public class RegistrationActivity extends AppCompatActivity {
 
             //"http://meal-manager.csse.srose-hulman.edu/Register?" + params
             ServerConnections sc = new ServerConnections();
-            sc.postRequest(query);
+            JSONObject jo = sc.postRequest(query);
+            try {
+                mReturnedEmail = jo.getString("email");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             return true;
         }
@@ -233,13 +242,13 @@ public class RegistrationActivity extends AppCompatActivity {
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
+            if (success && mEmail.equals(mReturnedEmail)) {
                 Intent intent = new Intent(RegistrationActivity.this, TaskSelectActivity.class);
                 intent.putExtra("user_id", mEmail);
                 startActivity(intent);
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                mEmailView.setError(getString(R.string.error_invalid_email_exists));
+                mEmailView.requestFocus();
             }
         }
 

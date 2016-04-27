@@ -7,29 +7,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
 public class ServerConnections {
     String url = "http://meal-manager.csse.rose-hulman.edu/";
     String charset = "UTF-8";
 
     public JSONObject postRequest(String query) {
-        URLConnection connection = null;
+        HttpURLConnection connection = null;
         try {
-            connection = new URL(url).openConnection();
-            connection.setDoOutput(true); // Triggers POST.
+            connection = (HttpURLConnection) new URL(url + query).openConnection();
+            connection.setRequestMethod("POST");
             connection.setRequestProperty("Accept-Charset", charset);
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
 
-            try (OutputStream output = connection.getOutputStream()) {
-                output.write(query.getBytes(charset));
-            }
-
-            HttpURLConnection conn = (HttpURLConnection) connection;
-            int status = conn.getResponseCode();
+            int status = connection.getResponseCode();
             if (printStatusMessage(status)) {
                 return new JSONObject();
             }
@@ -40,7 +32,6 @@ public class ServerConnections {
 
             StringBuilder responseStrBuilder = new StringBuilder();
             while((line =  bR.readLine()) != null){
-
                 responseStrBuilder.append(line);
             }
             response.close();
@@ -83,6 +74,10 @@ public class ServerConnections {
 
     private boolean printStatusMessage(int status) {
         // TODO: Fill in error display
+        // email & password don't correspond = 601
+        // any args are missing = 701
+        // suspected injection attack = 666
+
         System.out.println(status);
         return (status != 200);
     }

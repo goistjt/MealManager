@@ -15,13 +15,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class DineInActivity extends ListActivity {
+public class DineOutActivity extends ListActivity {
 
     private ProgressDialog pDialog;
     private String mEmail;
-    private JSONObject mRecipes;
+    private JSONObject mRestaurants;
     private ListView mListView;
-    ArrayList<HashMap<String, Object>> recipeList;
+    ArrayList<HashMap<String, Object>> restList;
     JSONArray recipes = null;
 
     @Override
@@ -33,12 +33,12 @@ public class DineInActivity extends ListActivity {
         assert extras != null;
         mEmail = extras.getString("user_id");
         try {
-            mRecipes = new JSONObject(getIntent().getStringExtra("recipes"));
+            mRestaurants = new JSONObject(getIntent().getStringExtra("recipes"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        recipeList = new ArrayList<>();
+        restList = new ArrayList<>();
         mListView = getListView();
 
         new getRecipes().execute();
@@ -50,7 +50,7 @@ public class DineInActivity extends ListActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             // Showing progress dialog
-            pDialog = new ProgressDialog(DineInActivity.this);
+            pDialog = new ProgressDialog(DineOutActivity.this);
             pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
             pDialog.show();
@@ -61,28 +61,28 @@ public class DineInActivity extends ListActivity {
         protected Void doInBackground(Void... arg0) {
             try {
                 // Getting JSON Array node
-                recipes = mRecipes.getJSONArray("Recipes");
+                recipes = mRestaurants.getJSONArray("Restaurants");
 
                 // looping through All Contacts
                 for (int i = 0; i < recipes.length(); i++) {
                     JSONObject r = recipes.getJSONObject(i);
 
                     String name = r.getString("name");
-                    String time = r.getString("total_time");
+                    String time = r.getString("phone");
                     String type = r.getString("type");
-                    int id = r.getInt("recipe_id");
+                    int id = r.getInt("rest_id");
 
                     // tmp hashmap for single contact
                     HashMap<String, Object> recipe = new HashMap<>();
 
                     // adding each child node to HashMap key => value
                     recipe.put("name", name);
-                    recipe.put("total time", time);
+                    recipe.put("phone", time);
                     recipe.put("type", type);
-                    recipe.put("recipe_id", id);
+                    recipe.put("rest_id", id);
 
                     // adding contact to contact list
-                    recipeList.add(recipe);
+                    restList.add(recipe);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -100,11 +100,11 @@ public class DineInActivity extends ListActivity {
              * Updating parsed JSON data into ListView
              * */
             ListAdapter adapter = new SimpleAdapter(
-                    DineInActivity.this,
-                    recipeList,
-                    R.layout.activity_dine_in,
-                    new String[]{"name", "total time", "type"},
-                    new int[]{R.id.name, R.id.total_time, R.id.type});
+                    DineOutActivity.this,
+                    restList,
+                    R.layout.activity_dine_out,
+                    new String[]{"name", "phone", "type"},
+                    new int[]{R.id.name, R.id.phone, R.id.type});
             setListAdapter(adapter);
         }
 

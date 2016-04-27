@@ -286,7 +286,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-            if (success & mReturnedEmail.equals(mEmail)) {
+            if (success && mReturnedEmail.equals(mEmail)) {
                 Intent intent = new Intent(LoginActivity.this, TaskSelectActivity.class);
                 intent.putExtra("user_id", mEmail);
                 startActivity(intent);
