@@ -33,7 +33,7 @@ public class DineOutActivity extends ListActivity {
         assert extras != null;
         mEmail = extras.getString("user_id");
         try {
-            mRestaurants = new JSONObject(getIntent().getStringExtra("recipes"));
+            mRestaurants = new JSONObject(getIntent().getStringExtra("restaurants"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
