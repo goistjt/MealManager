@@ -35,6 +35,7 @@ public class ShoppingListActivity extends ListActivity {
         mEmail = extras.getString("user_id");
         try {
             mIngredients = new JSONObject(getIntent().getStringExtra("ingredients"));
+            System.out.println(mIngredients);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -68,7 +69,7 @@ public class ShoppingListActivity extends ListActivity {
                 for (int i = 0; i < ingredients.length(); i++) {
                     JSONObject r = ingredients.getJSONObject(i);
 
-                    String name = r.getString("name");
+                    String name = r.getString("ingredient_name");
 
                     // tmp hashmap for single contact
                     HashMap<String, Object> recipe = new HashMap<>();
@@ -94,6 +95,8 @@ public class ShoppingListActivity extends ListActivity {
             /**
              * Updating parsed JSON data into ListView
              * */
+            System.out.println("list: " + ingredientList.toString());
+            System.out.println("is this working?");
             if (ingredientList.size() == 0) {
                 TextView tv = (TextView) findViewById(R.id.empty);
                 tv.setText(R.string.empty_shopping_list);

@@ -131,7 +131,7 @@ public class TaskSelectActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            String query = "ShoppingList";
+            String query = String.format("ShoppingList?email=%s", mEmail);
 
             //"http://meal-manager.csse.srose-hulman.edu/ShoppingList"
             ServerConnections serverConnections = new ServerConnections();
