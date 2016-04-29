@@ -100,18 +100,14 @@ public class DineInActivity extends ListActivity {
             /**
              * Updating parsed JSON data into ListView
              * */
-            if (recipeList.size() == 0) {
-                TextView tv = (TextView) findViewById(R.id.empty);
-                tv.setText(R.string.empty_recipe_list);
-            } else {
-                ListAdapter adapter = new SimpleAdapter(
-                        DineInActivity.this,
-                        recipeList,
-                        R.layout.activity_dine_in,
-                        new String[]{"name", "total time", "type"},
-                        new int[]{R.id.name, R.id.total_time, R.id.type});
-                setListAdapter(adapter);
-            }
+            ListAdapter adapter = new SimpleAdapter(
+                    DineInActivity.this,
+                    recipeList,
+                    R.layout.activity_dine_in,
+                    new String[]{"name", "total time", "type"},
+                    new int[]{R.id.name, R.id.total_time, R.id.type});
+            setListAdapter(adapter);
+
         }
 
     }

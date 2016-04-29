@@ -97,18 +97,13 @@ public class ShoppingListActivity extends ListActivity {
              * */
             System.out.println("list: " + ingredientList.toString());
             System.out.println("is this working?");
-            if (ingredientList.size() == 0) {
-                TextView tv = (TextView) findViewById(R.id.empty);
-                tv.setText(R.string.empty_shopping_list);
-            } else {
-                ListAdapter adapter = new SimpleAdapter(
-                        ShoppingListActivity.this,
-                        ingredientList,
-                        R.layout.activity_shopping_list,
-                        new String[]{"name"},
-                        new int[]{R.id.name});
-                setListAdapter(adapter);
-            }
+            ListAdapter adapter = new SimpleAdapter(
+                    ShoppingListActivity.this,
+                    ingredientList,
+                    R.layout.activity_shopping_list,
+                    new String[]{"name"},
+                    new int[]{R.id.name});
+            setListAdapter(adapter);
         }
 
     }

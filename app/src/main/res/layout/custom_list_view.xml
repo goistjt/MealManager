@@ -13,8 +13,8 @@
         android:drawSelectorOnTop="false"/>
 
     <TextView
-        android:id="@+id/empty"
+        android:id="@android:id/empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text=""/>
+        android:text="@string/empty_list"/>
 </LinearLayout>
