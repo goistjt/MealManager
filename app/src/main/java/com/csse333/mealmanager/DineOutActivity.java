@@ -2,8 +2,14 @@ package com.csse333.mealmanager;
 
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.IntentCompat;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -43,6 +49,28 @@ public class DineOutActivity extends ListActivity {
         mListView = getListView();
 
         new getRecipes().execute();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_log_out:
+                Intent logOutIntent = new Intent(this, LoginActivity.class);
+                ComponentName cn = logOutIntent.getComponent();
+                Intent mainIntent = IntentCompat.makeRestartActivityTask(cn);
+                startActivity(mainIntent);
+                startActivity(logOutIntent);
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private class getRecipes extends AsyncTask<Void, Void, Void> {

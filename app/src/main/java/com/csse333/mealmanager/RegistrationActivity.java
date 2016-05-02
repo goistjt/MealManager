@@ -3,11 +3,11 @@ package com.csse333.mealmanager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -21,14 +21,13 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class RegistrationActivity extends AppCompatActivity {
+public class RegistrationActivity extends Activity {
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -83,7 +82,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private void setupActionBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             // Show the Up button in the action bar.
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 
@@ -246,6 +245,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 Intent intent = new Intent(RegistrationActivity.this, TaskSelectActivity.class);
                 intent.putExtra("user_id", mEmail);
                 startActivity(intent);
+                finish();
             } else {
                 mEmailView.setError(getString(R.string.error_invalid_email_exists));
                 mEmailView.requestFocus();

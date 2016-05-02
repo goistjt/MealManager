@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Meal Manager</string>
 
-    <!-- Strings related to login -->
+    <!-- Strings related to login/register -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in_short">Sign in</string>
@@ -17,8 +17,15 @@
     <string name="title_activity_registration">Register</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="register_name">Full Name</string>
+
+    <!-- Strings related to tasks -->
     <string name="view_shopping_list">View Shopping List</string>
     <string name="dine_in">Dine In</string>
     <string name="dine_out">Dine Out</string>
     <string name="empty_list">Nothing matches your search!</string>
+
+    <string name="add_to_shopping_list">Add to Shopping List</string>
+
+    <!-- String related to menu -->
+    <string name="menu_item_log_out">Log Out</string>
 </resources>

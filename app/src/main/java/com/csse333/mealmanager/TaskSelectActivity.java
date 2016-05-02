@@ -1,18 +1,18 @@
 package com.csse333.mealmanager;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-public class TaskSelectActivity extends AppCompatActivity {
+public class TaskSelectActivity extends Activity {
 
     private String mEmail;
     private DineInTask mDineInTask = null;
@@ -56,6 +56,26 @@ public class TaskSelectActivity extends AppCompatActivity {
                 mShoppingListTask.execute((Void) null);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_log_out:
+                // TODO: check this logic
+                Intent logOutIntent = new Intent(this, LoginActivity.class);
+                startActivity(logOutIntent);
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public class DineInTask extends AsyncTask<Void, Void, Boolean> {
@@ -141,7 +161,7 @@ public class TaskSelectActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mDineOutTask = null;
+            mShoppingListTask = null;
 
             if (success) {
                 Intent intent = new Intent(TaskSelectActivity.this, ShoppingListActivity.class);
@@ -153,7 +173,7 @@ public class TaskSelectActivity extends AppCompatActivity {
 
         @Override
         protected void onCancelled() {
-            mDineOutTask = null;
+            mShoppingListTask = null;
         }
     }
 }
