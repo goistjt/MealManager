@@ -52,7 +52,7 @@ public class DineOutActivity extends ListActivity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String rest = restList.get(position).toString();
+                HashMap<String, Object> rest = restList.get(position);
                 Intent intent = new Intent(DineOutActivity.this, RestDetailActivity.class);
                 intent.putExtra("rest_info", rest);
                 startActivity(intent);
@@ -107,19 +107,38 @@ public class DineOutActivity extends ListActivity {
                 for (int i = 0; i < recipes.length(); i++) {
                     JSONObject r = recipes.getJSONObject(i);
 
-                    String name = r.getString("rest_name");
-                    String time = r.getString("phone");
-                    String type = r.getString("food_type");
                     int id = r.getInt("rest_id");
+                    String name = r.getString("rest_name");
+                    String phone = r.getString("phone");
+                    String email = r.getString("email");
+                    String street = r.getString("street");
+                    String street2 = r.getString("street_2");
+                    String city = r.getString("city");
+                    String state = r.getString("state");
+                    String postal_code = r.getString("postal_code");
+                    String type = r.getString("food_type");
+                    boolean kids = r.getBoolean("kid_friendly");
+                    boolean bar = r.getBoolean("has_bar");
+                    boolean outdoor = r.getBoolean("outdoor_seating");
+                    String price = r.getString("price_range");
+
+                    String address = String.format("%s %s %s, %s %s", street, street2, city,
+                            state, postal_code);
 
                     // tmp hashmap for single contact
                     HashMap<String, Object> recipe = new HashMap<>();
 
                     // adding each child node to HashMap key => value
-                    recipe.put("name", name);
-                    recipe.put("phone", time);
-                    recipe.put("type", type);
                     recipe.put("rest_id", id);
+                    recipe.put("name", name);
+                    recipe.put("phone", phone);
+                    recipe.put("email", email);
+                    recipe.put("address", address);
+                    recipe.put("type", type);
+                    recipe.put("kid_friendly", kids);
+                    recipe.put("has_bar", bar);
+                    recipe.put("outdoor_seating", outdoor);
+                    recipe.put("price", price);
 
                     // adding contact to contact list
                     restList.add(recipe);

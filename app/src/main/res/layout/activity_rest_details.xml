@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:textAlignment="center">
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="2dip"
-        android:paddingTop="6dip"
         android:textColor="#43bd00"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/phone_number"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="2dip"
-        android:textColor="#acacac" />
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:paddingTop="10dip"
+        android:paddingBottom="10dip" />
 
     <TextView
         android:id="@+id/type"
@@ -26,15 +21,74 @@
         android:layout_height="wrap_content"
         android:gravity="start"
         android:textColor="#5d5d5d"
-        android:textStyle="bold" />
+        android:textSize="20sp"
+        android:paddingTop="10dip"
+        android:paddingBottom="10dip" />
+
+    <TextView
+        android:id="@+id/phone_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:textSize="20sp"
+        android:paddingTop="10dip"
+        android:paddingBottom="10dip" />
+
+    <TextView
+        android:id="@+id/email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:textSize="20sp"
+        android:paddingTop="10dip"
+        android:paddingBottom="10dip" />
 
     <TextView
         android:id="@+id/address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="start"
         android:textColor="#5d5d5d"
-        android:textStyle="bold" />
+        android:textSize="20sp"
+        android:textAlignment="center"
+        android:paddingTop="10dip"
+        android:paddingBottom="10dip" />
+
+
+    <TextView
+        android:id="@+id/kid_friendly"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:textSize="20sp"
+        android:paddingTop="10dip"
+        android:paddingBottom="10dip" />
+
+    <TextView
+        android:id="@+id/bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:textSize="20sp"
+        android:paddingTop="10dip"
+        android:paddingBottom="10dip" />
+
+    <TextView
+        android:id="@+id/outdoor_seating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:textSize="20sp"
+        android:paddingTop="10dip"
+        android:paddingBottom="10dip" />
+
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:textSize="20sp"
+        android:paddingTop="10dip"
+        android:paddingBottom="10dip" />
 
     <Button
         android:layout_width="wrap_content"

@@ -42,6 +42,12 @@
         <activity android:name=".ShoppingListActivity"
             android:theme="@style/AppTheme">
         </activity>
+        <activity android:name=".RestDetailActivity"
+            android:theme="@style/AppTheme">
+        </activity>
+        <activity android:name=".RecipeDetailActivity"
+            android:theme="@style/AppTheme">
+        </activity>
     </application>
 
 </manifest>

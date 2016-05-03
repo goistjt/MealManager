@@ -1,31 +1,20 @@
 package com.csse333.mealmanager;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
+import android.widget.TextView;
 import java.util.HashMap;
 
-public class RestDetailActivity extends ListActivity {
+public class RestDetailActivity extends Activity {
 
     private String mEmail;
-    private JSONObject mDetails;
+    private HashMap<String, Object> mDetails;
     private ProgressDialog pDialog;
-    private ListView mListView;
     private getMenuItems mItemsTask = null;
-    ArrayList<HashMap<String, Object>> detailList;
-    JSONArray detail = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,14 +24,9 @@ public class RestDetailActivity extends ListActivity {
         Bundle extras = getIntent().getExtras();
         assert extras != null;
         mEmail = extras.getString("user_id");
-        try {
-            mDetails = new JSONObject(extras.getString("rest_info"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        detailList = new ArrayList<>();
-        mListView = getListView();
+        mDetails = (HashMap<String, Object>) extras.get("rest_info");
+        //recipe.put("rest_id", id);
+        screenSetUp();
 
         Button menuList = (Button) findViewById(R.id.rest_details_button);
         menuList.setOnClickListener(new View.OnClickListener() {
@@ -51,6 +35,62 @@ public class RestDetailActivity extends ListActivity {
                //placeholder
             }
         });
+    }
+
+    private void screenSetUp() {
+        ((TextView) findViewById(R.id.name)).setText(mDetails.get("name").toString());
+
+        String phoneString = mDetails.get("phone").toString();
+        if (phoneString.equals("")) {
+            setGone((TextView) findViewById(R.id.phone_number));
+        } else {
+            ((TextView) findViewById(R.id.phone_number)).setText(phoneString);
+        }
+
+        String emailString = mDetails.get("email").toString();
+        if (emailString.equals("")) {
+            setGone((TextView) findViewById(R.id.email));
+        } else {
+            ((TextView) findViewById(R.id.email)).setText(emailString);
+        }
+
+        ((TextView) findViewById(R.id.address)).setText(mDetails.get("address").toString());
+
+        String typeString = mDetails.get("type").toString();
+        if (typeString.equals("")) {
+            setGone((TextView) findViewById(R.id.type));
+        } else {
+            ((TextView) findViewById(R.id.type)).setText(typeString);
+        }
+
+        if ((boolean) mDetails.get("kid_friendly")) {
+            ((TextView) findViewById(R.id.kid_friendly)).setText("Kid Friendly");
+        } else {
+            setGone((TextView) findViewById(R.id.kid_friendly));
+        }
+
+        if ((boolean) mDetails.get("has_bar")) {
+            ((TextView) findViewById(R.id.bar)).setText("Bar");
+        } else {
+            setGone((TextView) findViewById(R.id.bar));
+        }
+
+        if ((boolean) mDetails.get("outdoor_seating")) {
+            ((TextView) findViewById(R.id.outdoor_seating)).setText("Outdoor seating available");
+        } else {
+            setGone((TextView) findViewById(R.id.outdoor_seating));
+        }
+
+        String priceString = mDetails.get("price").toString();
+        if (priceString.equals("")) {
+            setGone((TextView) findViewById(R.id.price));
+        } else {
+            ((TextView) findViewById(R.id.price)).setText(priceString);
+        }
+    }
+
+    private void setGone(TextView v) {
+        v.setVisibility(View.GONE);
     }
 
     private class getMenuItems extends AsyncTask<Void, Void, Void> {
@@ -67,41 +107,6 @@ public class RestDetailActivity extends ListActivity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            try {
-                // Getting JSON Array node
-                detail = mDetails.getJSONArray("Details");
-
-                // looping through All Contacts
-                for (int i = 0; i < detail.length(); i++) {
-                    JSONObject r = detail.getJSONObject(i);
-
-                    int id = r.getInt("recipe_id");
-                    String name = r.getString("name");
-                    String instr = r.getString("cooking_instr");
-                    String time = r.getString("total_time");
-                    String type = r.getString("type");
-                    String vegan = (r.getInt("vegan") == 0) ? "vegan" : "";
-                    String dairy = (r.getInt("dairy_free") == 0) ? "dairy free" : "";
-                    String gluten = (r.getInt("gluten_free") == 0) ? "gluten free" : "";
-
-                    // tmp hashmap for single contact
-                    HashMap<String, Object> recipe = new HashMap<>();
-
-                    // adding each child node to HashMap key => value
-                    recipe.put("name", name);
-                    recipe.put("total time", time);
-                    recipe.put("type", type);
-                    recipe.put("recipe_id", id);
-                    recipe.put("vegan", vegan);
-                    recipe.put("dairy", dairy);
-                    recipe.put("gluten", gluten);
-
-                    // adding contact to contact list
-                    detailList.add(recipe);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
             return null;
         }
 
@@ -114,14 +119,6 @@ public class RestDetailActivity extends ListActivity {
             /**
              * Updating parsed JSON data into ListView
              * */
-            ListAdapter adapter = new SimpleAdapter(
-                    RestDetailActivity.this,
-                    detailList,
-                    R.layout.activity_dine_in,
-                    new String[]{"name", "total time", "type"},
-                    new int[]{R.id.name, R.id.total_time, R.id.type});
-            setListAdapter(adapter);
-
         }
 
     }
