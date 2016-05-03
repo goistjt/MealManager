@@ -10,6 +10,8 @@ import android.support.v4.content.IntentCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -47,6 +49,15 @@ public class DineOutActivity extends ListActivity {
 
         restList = new ArrayList<>();
         mListView = getListView();
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String rest = restList.get(position).toString();
+                Intent intent = new Intent(DineOutActivity.this, RestDetailActivity.class);
+                intent.putExtra("rest_info", rest);
+                startActivity(intent);
+            }
+        });
 
         new getRecipes().execute();
     }

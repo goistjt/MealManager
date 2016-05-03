@@ -28,4 +28,5 @@
 
     <!-- String related to menu -->
     <string name="menu_item_log_out">Log Out</string>
+    <string name="rest_details_view_menu_button">View Menu</string>
 </resources>
