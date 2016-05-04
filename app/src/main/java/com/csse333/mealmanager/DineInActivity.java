@@ -53,9 +53,9 @@ public class DineInActivity extends ListActivity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String recipe_id = recipeList.get(position).get("recipe_id").toString();
-                //mRecipeTask = new RecipeTask(recipe_id);
-                //mRecipeTask.execute();
+                HashMap<String, Object> recipe = recipeList.get(position);
+                mRecipeTask = new RecipeTask(recipe);
+                mRecipeTask.execute();
             }
         });
 
@@ -93,7 +93,6 @@ public class DineInActivity extends ListActivity {
             pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
             pDialog.show();
-
         }
 
         @Override
@@ -107,23 +106,28 @@ public class DineInActivity extends ListActivity {
                     JSONObject r = recipes.getJSONObject(i);
 
                     int id = r.getInt("recipe_id");
+                    String author_name = r.getString("author");
                     String name = r.getString("name");
                     String instr = r.getString("cooking_instr");
                     String time = r.getString("total_time");
                     String type = r.getString("type");
-                    String vegan = (r.getBoolean("vegan")) ? "vegan" : "";
-                    String dairy = (r.getBoolean("dairy_free")) ? "dairy free" : "";
-                    String gluten = (r.getBoolean("gluten_free")) ? "gluten free" : "";
+                    boolean vegan = r.getBoolean("vegan");
+                    boolean vegetarian = r.getBoolean("vegetarian");
+                    boolean dairy = r.getBoolean("dairy_free");
+                    boolean gluten = r.getBoolean("gluten_free");
 
                     // tmp hashmap for single contact
                     HashMap<String, Object> recipe = new HashMap<>();
 
                     // adding each child node to HashMap key => value
-                    recipe.put("name", name);
-                    recipe.put("total time", time);
-                    recipe.put("type", type);
                     recipe.put("recipe_id", id);
+                    recipe.put("author_name", author_name);
+                    recipe.put("name", name);
+                    recipe.put("instr", instr);
+                    recipe.put("total_time", time);
+                    recipe.put("type", type);
                     recipe.put("vegan", vegan);
+                    recipe.put("vegetarian", vegetarian);
                     recipe.put("dairy", dairy);
                     recipe.put("gluten", gluten);
 
@@ -159,16 +163,16 @@ public class DineInActivity extends ListActivity {
 
     private class RecipeTask extends AsyncTask<Void, Void, Boolean> {
 
-        String recipe_id;
-        RecipeTask(String id) {
-            recipe_id = id;
+        HashMap<String, Object> mRecipe;
+        RecipeTask(HashMap<String, Object> recipe) {
+            mRecipe = recipe;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            String query = String.format("RecipeDetails?recipe_id=%s", recipe_id);
+            String query = String.format("Ingredients?recipe_id=%s", mRecipe.get("recipe_id"));
 
-            //"http://meal-manager.csse.srose-hulman.edu/RecipeDetails"
+            //"http://meal-manager.csse.srose-hulman.edu/Ingredients"
             ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query);
             return true;
@@ -181,7 +185,8 @@ public class DineInActivity extends ListActivity {
             if (success) {
                 Intent intent = new Intent(DineInActivity.this, RecipeDetailActivity.class);
                 intent.putExtra("user_id", mEmail);
-                intent.putExtra("details", mReturnedJSON.toString());
+                intent.putExtra("recipe_details", mRecipe);
+                intent.putExtra("ingredients", mReturnedJSON.toString());
                 startActivity(intent);
             }
         }
