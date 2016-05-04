@@ -1,9 +1,11 @@
 package com.csse333.mealmanager;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.IntentCompat;
@@ -11,10 +13,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,6 +45,7 @@ public class DineInActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_list_view);
+        addActionBar(getActionBar());
 
         Bundle extras = getIntent().getExtras();
         assert extras != null;
@@ -62,25 +72,42 @@ public class DineInActivity extends ListActivity {
         new getRecipes().execute();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+    public void addActionBar(ActionBar actionBar) {
+        final ViewGroup actionBarLayout = (ViewGroup) getLayoutInflater().inflate(
+                R.layout.action_bar, null);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_item_log_out:
-                Intent logOutIntent = new Intent(this, LoginActivity.class);
+        // Set up your ActionBar
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(actionBarLayout);
+
+        final Button actionBarLogout = (Button) findViewById(R.id.menu_item_log_out);
+        actionBarLogout.setMaxHeight(actionBar.getHeight());
+        actionBarLogout.setMaxWidth(10);
+        actionBarLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent logOutIntent = new Intent(DineInActivity.this, LoginActivity.class);
                 ComponentName cn = logOutIntent.getComponent();
                 Intent mainIntent = IntentCompat.makeRestartActivityTask(cn);
                 startActivity(mainIntent);
                 finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
+            }
+        });
+
+        final RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radio_group);
+        radioGroup.check(0);
+        final EditText searchText = (EditText) findViewById(R.id.menu_search_bar);
+        final Button actionBarSearch = (Button) findViewById(R.id.menu_item_search);
+        actionBarSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String query = searchText.getText().toString();
+                String searchBy = (radioGroup.getCheckedRadioButtonId() == 0) ? "name" : "type";
+                // TODO : execute search query & update recipe list
+            }
+        });
     }
 
     private class getRecipes extends AsyncTask<Void, Void, Void> {

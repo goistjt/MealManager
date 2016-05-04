@@ -1,10 +1,12 @@
 package com.csse333.mealmanager;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.IntentCompat;
@@ -12,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ListAdapter;
@@ -47,6 +50,7 @@ public class RecipeDetailActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_details);
+        addActionBar(getActionBar());
 
         Bundle extras = getIntent().getExtras();
         assert extras != null;
@@ -78,25 +82,34 @@ public class RecipeDetailActivity extends Activity {
         new getIngredients().execute();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_item_log_out:
-                Intent logOutIntent = new Intent(this, LoginActivity.class);
+    public void addActionBar(ActionBar actionBar) {
+        final ViewGroup actionBarLayout = (ViewGroup) getLayoutInflater().inflate(
+                R.layout.action_bar, null);
+
+        // Set up your ActionBar
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(actionBarLayout);
+
+        final Button actionBarLogout = (Button) findViewById(R.id.menu_item_log_out);
+        actionBarLogout.setMaxHeight(actionBar.getHeight());
+        actionBarLogout.setMaxWidth(10);
+        actionBarLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent logOutIntent = new Intent(RecipeDetailActivity.this, LoginActivity.class);
                 ComponentName cn = logOutIntent.getComponent();
                 Intent mainIntent = IntentCompat.makeRestartActivityTask(cn);
                 startActivity(mainIntent);
                 finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
+            }
+        });
+
+        findViewById(R.id.menu_item_search).setVisibility(View.GONE);
+        findViewById(R.id.menu_search_bar);
+        findViewById(R.id.radio_group).setVisibility(View.GONE);
     }
 
     private void screenSetUp() {
@@ -116,7 +129,7 @@ public class RecipeDetailActivity extends Activity {
         cooking_instr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO : open a popup with the full recipe
+                // TODO : open a popup with the full recipe instr
             }
         });
 

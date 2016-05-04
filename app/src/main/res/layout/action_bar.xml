@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="?android:attr/actionBarSize"
+    android:enabled="false"
+    android:orientation="horizontal"
+    android:focusableInTouchMode="true">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/icon"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <AutoCompleteTextView
+            android:id="@+id/menu_search_bar"
+            android:layout_width="125dp"
+            android:layout_height="match_parent"
+            android:hint="@string/prompt_search"
+            android:textColorHint="@color/textColor"
+            android:inputType="textFilter"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/textColor"
+            android:textSize="20sp" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/radio_group">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_bar_name_radio_button"
+                android:id="@+id/radio_button_name"
+                android:textColor="@color/textColor" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_bar_type_radio_button"
+                android:id="@+id/radio_button_type"
+                android:textColor="@color/textColor" />
+        </RadioGroup>
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/menu_item_search"
+            android:drawableTop="@mipmap/search_icon" />
+    </LinearLayout>
+
+    <Button
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/menu_item_log_out"
+        android:drawableTop="@mipmap/logout_icon" />
+
+</LinearLayout>

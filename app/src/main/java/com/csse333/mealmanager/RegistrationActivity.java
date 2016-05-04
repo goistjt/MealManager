@@ -3,8 +3,10 @@ package com.csse333.mealmanager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -45,7 +48,7 @@ public class RegistrationActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
-        setupActionBar();
+        addActionBar(getActionBar());
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.register_email);
         mNameView = (EditText) findViewById(R.id.register_name);
@@ -75,15 +78,21 @@ public class RegistrationActivity extends Activity {
         mProgressView = findViewById(R.id.registration_progress);
     }
 
-    /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void setupActionBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            // Show the Up button in the action bar.
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+
+    public void addActionBar(ActionBar actionBar) {
+        final ViewGroup actionBarLayout = (ViewGroup) getLayoutInflater().inflate(
+                R.layout.action_bar, null);
+
+        // Set up your ActionBar
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(actionBarLayout);
+
+        findViewById(R.id.menu_item_log_out).setVisibility(View.GONE);
+        findViewById(R.id.menu_item_search).setVisibility(View.GONE);
+        findViewById(R.id.menu_search_bar).setVisibility(View.GONE);
+        findViewById(R.id.radio_group).setVisibility(View.GONE);
     }
 
     /**
