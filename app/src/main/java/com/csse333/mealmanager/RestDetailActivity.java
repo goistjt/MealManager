@@ -15,16 +15,30 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class RestDetailActivity extends Activity {
 
     private String mEmail;
     private HashMap<String, Object> mDetails;
+    private JSONObject mMenuItems;
     private ProgressDialog pDialog;
     private getMenuItems mItemsTask = null;
+
+    ArrayList<HashMap<String, String>> menuItemList;
+    ExpandableListAdapter listAdapter;
+    ExpandableListView expListView;
+    List<String> listDataHeader;
+    HashMap<String, List<String>> listDataChild;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,16 +50,15 @@ public class RestDetailActivity extends Activity {
         assert extras != null;
         mEmail = extras.getString("user_id");
         mDetails = (HashMap<String, Object>) extras.get("rest_info");
-        //recipe.put("rest_id", id);
+        mMenuItems = (JSONObject) extras.get("menu_items");
         screenSetUp();
 
-        Button menuList = (Button) findViewById(R.id.rest_details_button);
-        menuList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //placeholder
-            }
-        });
+        listDataHeader = new ArrayList<>();
+        listDataChild = new HashMap<>();
+
+        expListView = (ExpandableListView) findViewById(R.id.expandableListView);
+
+        new getMenuItems().execute();
     }
 
 
@@ -146,6 +159,62 @@ public class RestDetailActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
+            try {
+                // Getting JSON Array node
+                JSONArray jsonMenuItem = mMenuItems.getJSONArray("Menu");
+
+                // looping through All menu items
+                // TODO : fix this call
+                for (int i = 0; i < jsonMenuItem.length(); i++) {
+                    JSONObject r = jsonMenuItem.getJSONObject(i);
+
+                    String name = r.getString("name");
+                    String ingr_units = r.getString("units");
+                    String num_units = r.getString("num_of_units");
+                    String unit = r.getString("unit");
+                    String fat = r.getString("fat");
+                    String sugar = r.getString("sugar");
+                    String sodium = r.getString("sodium");
+                    String fiber = r.getString("fiber");
+                    String protein = r.getString("protein");
+                    String calories = r.getString("calories");
+
+                    // tmp hashmap for single ingredient
+                    HashMap<String, String> ingredient = new HashMap<>();
+
+                    // adding each child node to HashMap key => value
+                    ingredient.put("ingr_units", ingr_units);
+                    ingredient.put("num_units", num_units);
+                    ingredient.put("unit", unit);
+                    ingredient.put("fat", fat);
+                    ingredient.put("sugar", sugar);
+                    ingredient.put("sodium", sodium);
+                    ingredient.put("fiber", fiber);
+                    ingredient.put("protein", protein);
+                    ingredient.put("calories", calories);
+                    ingredient.put("name", name);
+
+                    // adding ingredient to ingredient list
+                    menuItemList.add(ingredient);
+
+                    // adding ingredient to expandable list view
+                    List<String> details = new ArrayList<>();
+                    details.add("amount: " + num_units + " " + unit);
+                    //details.add("units: " + unit);
+                    details.add("calories: " + calories);
+                    //details.add("nutrition content units: " + ingr_units);
+                    details.add("fat: " + fat + "g per " + ingr_units);
+                    details.add("sugar: " + sugar + "g per " + ingr_units);
+                    details.add("sodium: " + sodium + "g per " + ingr_units);
+                    details.add("fiber: " + fiber + "g per " + ingr_units);
+                    details.add("protein: " + protein + "g per " + ingr_units);
+                    listDataHeader.add(name);
+                    listDataChild.put(listDataHeader.get(i), details);
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             return null;
         }
 
@@ -158,6 +227,8 @@ public class RestDetailActivity extends Activity {
             /**
              * Updating parsed JSON data into ListView
              * */
+            listAdapter = new ExpandableListAdapter(RestDetailActivity.this, listDataHeader, listDataChild);
+            expListView.setAdapter(listAdapter);
         }
 
     }

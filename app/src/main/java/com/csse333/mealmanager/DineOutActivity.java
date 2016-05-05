@@ -37,6 +37,7 @@ public class DineOutActivity extends ListActivity {
     ArrayList<HashMap<String, Object>> restList;
     JSONArray rests = null;
     private RestaurantSearchTask mRestaurantSearchTask = null;
+    private MenuItemsTask mMenuItemTask = null;
     private JSONObject mReturnedJSON = null;
 
     @Override
@@ -60,9 +61,8 @@ public class DineOutActivity extends ListActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 HashMap<String, Object> rest = restList.get(position);
-                Intent intent = new Intent(DineOutActivity.this, RestDetailActivity.class);
-                intent.putExtra("rest_info", rest);
-                startActivity(intent);
+                mMenuItemTask = new MenuItemsTask(rest);
+                mMenuItemTask.execute();
             }
         });
 
@@ -219,6 +219,43 @@ public class DineOutActivity extends ListActivity {
 
         }
 
+    }
+
+    private class MenuItemsTask extends AsyncTask<Void, Void, Boolean> {
+
+        HashMap<String, Object> mRest;
+
+        MenuItemsTask(HashMap<String, Object> rest) {
+            mRest = rest;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            String query = String.format("RestMenu?rest_id=%s", mRest.get("rest_id"));
+
+            //"http://meal-manager.csse.srose-hulman.edu/RestMenu"
+            ServerConnections serverConnections = new ServerConnections();
+            mReturnedJSON = serverConnections.getRequest(query);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mMenuItemTask = null;
+
+            if (success) {
+                Intent intent = new Intent(DineOutActivity.this, RestDetailActivity.class);
+                intent.putExtra("user_id", mEmail);
+                intent.putExtra("rest_info", mRest);
+                intent.putExtra("menu_items", mReturnedJSON.toString());
+                startActivity(intent);
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mMenuItemTask = null;
+        }
     }
 
     private class RestaurantSearchTask extends AsyncTask<Void, Void, Boolean> {

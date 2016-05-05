@@ -182,7 +182,7 @@ public class RecipeDetailActivity extends Activity {
                 // Getting JSON Array node
                 JSONArray jsonIngredient = mIngredients.getJSONArray("Ingredients");
 
-                // looping through All Contacts
+                // looping through All ingredients
                 for (int i = 0; i < jsonIngredient.length(); i++) {
                     JSONObject r = jsonIngredient.getJSONObject(i);
 

@@ -76,10 +76,18 @@
         android:paddingBottom="10dip"
         android:textAlignment="center" />
 
-    <Button
+    <!--<Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/rest_details_view_menu_button"
         android:id="@+id/rest_details_button"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal" />-->
+
+    <ExpandableListView
+        android:id="@+id/expandableListView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5dip"
+        android:paddingTop="5dip"
+        android:layout_weight="1" />
 </LinearLayout>
