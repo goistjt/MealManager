@@ -12,6 +12,7 @@
         android:src="@mipmap/icon"/>
 
     <LinearLayout
+        android:id="@+id/menu_search_layout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -26,27 +27,17 @@
             android:maxLines="1"
             android:singleLine="true"
             android:textColor="@color/textColor"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:imeOptions="actionDone" />
 
-        <RadioGroup
-            android:layout_width="match_parent"
+        <Spinner
+            android:id="@+id/menu_search_spinner"
+            android:layout_width="75dp"
             android:layout_height="match_parent"
-            android:id="@+id/radio_group">
-
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/action_bar_name_radio_button"
-                android:id="@+id/radio_button_name"
-                android:textColor="@color/textColor" />
-
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/action_bar_type_radio_button"
-                android:id="@+id/radio_button_type"
-                android:textColor="@color/textColor" />
-        </RadioGroup>
+            style="?android:attr/spinnerDropDownItemStyle"
+            android:singleLine="true"
+            android:textColor="@color/textColor"
+            android:textSize="20sp" />
 
         <Button
             android:layout_width="50dp"

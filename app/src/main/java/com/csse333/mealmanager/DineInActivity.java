@@ -4,7 +4,9 @@ import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,7 +16,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
@@ -22,11 +26,13 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -39,6 +45,7 @@ public class DineInActivity extends ListActivity {
     ArrayList<HashMap<String, Object>> recipeList;
     JSONArray recipes = null;
     private RecipeTask mRecipeTask = null;
+    private RecipeSearchTask mRecipeSearchTask = null;
     private JSONObject mReturnedJSON = null;
 
     @Override
@@ -69,7 +76,7 @@ public class DineInActivity extends ListActivity {
             }
         });
 
-        new getRecipes().execute();
+        new getRecipes(mRecipes).execute();
     }
 
     public void addActionBar(ActionBar actionBar) {
@@ -96,21 +103,49 @@ public class DineInActivity extends ListActivity {
             }
         });
 
-        final RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radio_group);
-        radioGroup.check(0);
         final EditText searchText = (EditText) findViewById(R.id.menu_search_bar);
+        final String[] searchBy = {""};
+
+        Spinner spinner = (Spinner) findViewById(R.id.menu_search_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.search_type_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(0);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                searchBy[0] = parent.getItemAtPosition(position).equals("Name") ? "name" : "type";
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // default selection
+                searchBy[0] = "name";
+            }
+        });
+
         final Button actionBarSearch = (Button) findViewById(R.id.menu_item_search);
         actionBarSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 String query = searchText.getText().toString();
-                String searchBy = (radioGroup.getCheckedRadioButtonId() == 0) ? "name" : "type";
-                // TODO : execute search query & update recipe list
+                mRecipeSearchTask = new RecipeSearchTask(query, searchBy[0]);
+                mRecipeSearchTask.execute();
             }
         });
     }
 
     private class getRecipes extends AsyncTask<Void, Void, Void> {
+
+        private JSONObject currRecipes;
+
+        public getRecipes(JSONObject rec) {
+            currRecipes = rec;
+            recipeList = new ArrayList<>();
+        }
 
         @Override
         protected void onPreExecute() {
@@ -126,7 +161,7 @@ public class DineInActivity extends ListActivity {
         protected Void doInBackground(Void... arg0) {
             try {
                 // Getting JSON Array node
-                recipes = mRecipes.getJSONArray("Recipes");
+                recipes = currRecipes.getJSONArray("Recipes");
 
                 // looping through All Contacts
                 for (int i = 0; i < recipes.length(); i++) {
@@ -185,12 +220,12 @@ public class DineInActivity extends ListActivity {
             setListAdapter(adapter);
 
         }
-
     }
 
     private class RecipeTask extends AsyncTask<Void, Void, Boolean> {
 
         HashMap<String, Object> mRecipe;
+
         RecipeTask(HashMap<String, Object> recipe) {
             mRecipe = recipe;
         }
@@ -221,6 +256,39 @@ public class DineInActivity extends ListActivity {
         @Override
         protected void onCancelled() {
             mRecipeTask = null;
+        }
+    }
+
+    private class RecipeSearchTask extends AsyncTask<Void, Void, Boolean> {
+
+        private String mSearchString;
+        private String mSearchType;
+
+        RecipeSearchTask(String searchString, String searchType) {
+            mSearchString = searchString;
+            mSearchType = searchType;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            String query = String.format("Recipe?%s=%s", mSearchType, mSearchString);
+
+            //"http://meal-manager.csse.srose-hulman.edu/Recipe"
+            ServerConnections serverConnections = new ServerConnections();
+            mReturnedJSON = serverConnections.getRequest(query);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mRecipeSearchTask = null;
+
+            new getRecipes(mReturnedJSON).execute();
+        }
+
+        @Override
+        protected void onCancelled() {
+            mRecipeSearchTask = null;
         }
     }
 }

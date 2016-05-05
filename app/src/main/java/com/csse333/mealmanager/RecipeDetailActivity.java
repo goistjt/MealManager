@@ -107,9 +107,7 @@ public class RecipeDetailActivity extends Activity {
             }
         });
 
-        findViewById(R.id.menu_item_search).setVisibility(View.GONE);
-        findViewById(R.id.menu_search_bar);
-        findViewById(R.id.radio_group).setVisibility(View.GONE);
+        findViewById(R.id.menu_search_layout).setVisibility(View.GONE);
     }
 
     private void screenSetUp() {

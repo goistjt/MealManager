@@ -84,9 +84,7 @@ public class TaskSelectActivity extends Activity {
             }
         });
 
-        findViewById(R.id.menu_item_search).setVisibility(View.GONE);
-        findViewById(R.id.menu_search_bar).setVisibility(View.GONE);
-        findViewById(R.id.radio_group).setVisibility(View.GONE);
+        findViewById(R.id.menu_search_layout).setVisibility(View.GONE);
     }
 
     public class DineInTask extends AsyncTask<Void, Void, Boolean> {

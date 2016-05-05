@@ -80,9 +80,7 @@ public class ShoppingListActivity extends ListActivity {
             }
         });
 
-        findViewById(R.id.menu_item_search).setVisibility(View.GONE);
-        findViewById(R.id.menu_search_bar).setVisibility(View.GONE);
-        findViewById(R.id.radio_group).setVisibility(View.GONE);
+        findViewById(R.id.menu_search_layout).setVisibility(View.GONE);
     }
 
     private class getRecipes extends AsyncTask<Void, Void, Void> {

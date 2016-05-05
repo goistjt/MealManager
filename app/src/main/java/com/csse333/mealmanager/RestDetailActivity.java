@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
 import java.util.HashMap;
 
 public class RestDetailActivity extends Activity {
@@ -42,7 +43,7 @@ public class RestDetailActivity extends Activity {
         menuList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               //placeholder
+                //placeholder
             }
         });
     }
@@ -70,10 +71,9 @@ public class RestDetailActivity extends Activity {
             }
         });
 
-        findViewById(R.id.menu_item_search).setVisibility(View.GONE);
-        findViewById(R.id.menu_search_bar).setVisibility(View.GONE);
-        findViewById(R.id.radio_group).setVisibility(View.GONE);
+        findViewById(R.id.menu_search_layout).setVisibility(View.GONE);
     }
+
     private void screenSetUp() {
         ((TextView) findViewById(R.id.name)).setText(mDetails.get("name").toString());
 
@@ -100,29 +100,31 @@ public class RestDetailActivity extends Activity {
             ((TextView) findViewById(R.id.type)).setText(typeString);
         }
 
-        if ((boolean) mDetails.get("kid_friendly")) {
-            ((TextView) findViewById(R.id.kid_friendly)).setText("Kid Friendly");
-        } else {
-            setGone((TextView) findViewById(R.id.kid_friendly));
-        }
-
-        if ((boolean) mDetails.get("has_bar")) {
-            ((TextView) findViewById(R.id.bar)).setText("Bar");
-        } else {
-            setGone((TextView) findViewById(R.id.bar));
-        }
-
-        if ((boolean) mDetails.get("outdoor_seating")) {
-            ((TextView) findViewById(R.id.outdoor_seating)).setText("Outdoor seating available");
-        } else {
-            setGone((TextView) findViewById(R.id.outdoor_seating));
-        }
-
         String priceString = mDetails.get("price").toString();
         if (priceString.equals("")) {
             setGone((TextView) findViewById(R.id.price));
         } else {
-            ((TextView) findViewById(R.id.price)).setText(priceString);
+            String price = "Average Price: " + priceString;
+            ((TextView) findViewById(R.id.price)).setText(price);
+        }
+
+        String tags = "";
+        if ((boolean) mDetails.get("kid_friendly")) {
+            tags += "Kid Friendly";
+        }
+        if ((boolean) mDetails.get("has_bar")) {
+            tags += ", Bar";
+        }
+        if ((boolean) mDetails.get("outdoor_seating")) {
+            tags += ", Outdoor seating available";
+        }
+        if (tags.startsWith(", ")) {
+            tags = tags.substring(1);
+        }
+        if (!tags.isEmpty()) {
+            ((TextView) findViewById(R.id.tags)).setText(tags);
+        } else {
+            setGone((TextView) findViewById(R.id.tags));
         }
     }
 

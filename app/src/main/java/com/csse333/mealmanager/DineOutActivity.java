@@ -4,22 +4,22 @@ import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.IntentCompat;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
+import android.widget.Spinner;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,7 +35,9 @@ public class DineOutActivity extends ListActivity {
     private JSONObject mRestaurants;
     private ListView mListView;
     ArrayList<HashMap<String, Object>> restList;
-    JSONArray recipes = null;
+    JSONArray rests = null;
+    private RestaurantSearchTask mRestaurantSearchTask = null;
+    private JSONObject mReturnedJSON = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +66,7 @@ public class DineOutActivity extends ListActivity {
             }
         });
 
-        new getRecipes().execute();
+        new getRestaurants(mRestaurants).execute();
     }
 
     public void addActionBar(ActionBar actionBar) {
@@ -91,34 +93,49 @@ public class DineOutActivity extends ListActivity {
             }
         });
 
+        final EditText searchText = (EditText) findViewById(R.id.menu_search_bar);
+        final String[] searchBy = {""};
+
+        Spinner spinner = (Spinner) findViewById(R.id.menu_search_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.search_type_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(0);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                searchBy[0] = parent.getItemAtPosition(position).equals("Name") ? "name" : "type";
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // default selection
+                searchBy[0] = "name";
+            }
+        });
+
         final Button actionBarSearch = (Button) findViewById(R.id.menu_item_search);
         actionBarSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                String query = searchText.getText().toString();
+                mRestaurantSearchTask = new RestaurantSearchTask(query, searchBy[0]);
+                mRestaurantSearchTask.execute();
             }
         });
     }
-/**
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_item_log_out:
-                Intent logOutIntent = new Intent(this, LoginActivity.class);
-                ComponentName cn = logOutIntent.getComponent();
-                Intent mainIntent = IntentCompat.makeRestartActivityTask(cn);
-                startActivity(mainIntent);
-                startActivity(logOutIntent);
-                finish();
-                break;
-            case R.id.menu_item_search:
-                // TODO: add search logic
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }**/
 
-    private class getRecipes extends AsyncTask<Void, Void, Void> {
+    private class getRestaurants extends AsyncTask<Void, Void, Void> {
+
+        private JSONObject currRests;
+
+        public getRestaurants(JSONObject rest) {
+            currRests = rest;
+            restList = new ArrayList<>();
+        }
 
         @Override
         protected void onPreExecute() {
@@ -135,11 +152,11 @@ public class DineOutActivity extends ListActivity {
         protected Void doInBackground(Void... arg0) {
             try {
                 // Getting JSON Array node
-                recipes = mRestaurants.getJSONArray("Restaurants");
+                rests = currRests.getJSONArray("Restaurants");
 
                 // looping through All Contacts
-                for (int i = 0; i < recipes.length(); i++) {
-                    JSONObject r = recipes.getJSONObject(i);
+                for (int i = 0; i < rests.length(); i++) {
+                    JSONObject r = rests.getJSONObject(i);
 
                     int id = r.getInt("rest_id");
                     String name = r.getString("rest_name");
@@ -204,4 +221,36 @@ public class DineOutActivity extends ListActivity {
 
     }
 
+    private class RestaurantSearchTask extends AsyncTask<Void, Void, Boolean> {
+
+        private String mSearchString;
+        private String mSearchType;
+
+        RestaurantSearchTask(String searchString, String searchType) {
+            mSearchString = searchString;
+            mSearchType = searchType;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            String query = String.format("Restaurant?%s=%s", mSearchType, mSearchString);
+
+            //"http://meal-manager.csse.srose-hulman.edu/Restaurant"
+            ServerConnections serverConnections = new ServerConnections();
+            mReturnedJSON = serverConnections.getRequest(query);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mRestaurantSearchTask = null;
+
+            new getRestaurants(mReturnedJSON).execute();
+        }
+
+        @Override
+        protected void onCancelled() {
+            mRestaurantSearchTask = null;
+        }
+    }
 }
