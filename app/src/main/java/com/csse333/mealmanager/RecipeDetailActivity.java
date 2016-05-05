@@ -122,12 +122,18 @@ public class RecipeDetailActivity extends Activity {
 
         ((TextView) findViewById(R.id.total_time)).setText(mRecipes.get("total_time").toString() + " minutes");
 
-        TextView cooking_instr = (TextView) findViewById(R.id.cooking_instr);
-        cooking_instr.setText(mRecipes.get("instr").toString());
+        final TextView cooking_instr = (TextView) findViewById(R.id.cooking_instr);
+        String instr = mRecipes.get("instr").toString();
+        cooking_instr.setText(instr.substring(1, instr.length() - 1));
         cooking_instr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO : open a popup with the full recipe instr
+                if (cooking_instr.getMaxLines() == 3) {
+                    cooking_instr.setMaxLines(20);
+                } else {
+                    cooking_instr.setMaxLines(3);
+                }
             }
         });
 

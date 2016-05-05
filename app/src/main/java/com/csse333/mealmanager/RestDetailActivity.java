@@ -50,8 +50,13 @@ public class RestDetailActivity extends Activity {
         assert extras != null;
         mEmail = extras.getString("user_id");
         mDetails = (HashMap<String, Object>) extras.get("rest_info");
-        mMenuItems = (JSONObject) extras.get("menu_items");
+        try {
+            mMenuItems = new JSONObject(extras.get("menu_items").toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         screenSetUp();
+        menuItemList = new ArrayList<>();
 
         listDataHeader = new ArrayList<>();
         listDataChild = new HashMap<>();
@@ -148,23 +153,12 @@ public class RestDetailActivity extends Activity {
     private class getMenuItems extends AsyncTask<Void, Void, Void> {
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Showing progress dialog
-            pDialog = new ProgressDialog(RestDetailActivity.this);
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        @Override
         protected Void doInBackground(Void... arg0) {
             try {
                 // Getting JSON Array node
                 JSONArray jsonMenuItem = mMenuItems.getJSONArray("Menu");
 
                 // looping through All menu items
-                // TODO : fix this call
                 for (int i = 0; i < jsonMenuItem.length(); i++) {
                     JSONObject r = jsonMenuItem.getJSONObject(i);
 
@@ -193,11 +187,10 @@ public class RestDetailActivity extends Activity {
 
                     // adding ingredient to expandable list view
                     List<String> details = new ArrayList<>();
-                    details.add("avg-price: " + price);
-                    details.add("type: " + type);
+                    details.add("Average Price: " + price);
+                    details.add("Type: " + type);
 
                     String tags = "";
-
                     if (vegan) {
                         tags += "Vegan";
                     }
@@ -216,7 +209,9 @@ public class RestDetailActivity extends Activity {
                             tags = tags.substring(1);
                         }
                     }
-                    details.add(tags);
+                    if (!tags.equals("")) {
+                        details.add(tags);
+                    }
 
                     listDataHeader.add(name);
                     listDataChild.put(listDataHeader.get(i), details);
@@ -231,9 +226,6 @@ public class RestDetailActivity extends Activity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            // Dismiss the progress dialog
-            if (pDialog.isShowing())
-                pDialog.dismiss();
             /**
              * Updating parsed JSON data into ListView
              * */
