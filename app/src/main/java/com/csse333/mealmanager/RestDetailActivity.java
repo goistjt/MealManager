@@ -34,7 +34,7 @@ public class RestDetailActivity extends Activity {
     private ProgressDialog pDialog;
     private getMenuItems mItemsTask = null;
 
-    ArrayList<HashMap<String, String>> menuItemList;
+    ArrayList<HashMap<String, Object>> menuItemList;
     ExpandableListAdapter listAdapter;
     ExpandableListView expListView;
     List<String> listDataHeader;
@@ -168,30 +168,24 @@ public class RestDetailActivity extends Activity {
                 for (int i = 0; i < jsonMenuItem.length(); i++) {
                     JSONObject r = jsonMenuItem.getJSONObject(i);
 
+                    String price = r.getString("price");
                     String name = r.getString("name");
-                    String ingr_units = r.getString("units");
-                    String num_units = r.getString("num_of_units");
-                    String unit = r.getString("unit");
-                    String fat = r.getString("fat");
-                    String sugar = r.getString("sugar");
-                    String sodium = r.getString("sodium");
-                    String fiber = r.getString("fiber");
-                    String protein = r.getString("protein");
-                    String calories = r.getString("calories");
+                    String type = r.getString("type");
+                    boolean vegan = r.getBoolean("vegan");
+                    boolean vegetarian = r.getBoolean("vegetarian");
+                    boolean dairy = r.getBoolean("dairy_free");
+                    boolean gluten = r.getBoolean("gluten_free");
 
                     // tmp hashmap for single ingredient
-                    HashMap<String, String> ingredient = new HashMap<>();
+                    HashMap<String, Object> ingredient = new HashMap<>();
 
                     // adding each child node to HashMap key => value
-                    ingredient.put("ingr_units", ingr_units);
-                    ingredient.put("num_units", num_units);
-                    ingredient.put("unit", unit);
-                    ingredient.put("fat", fat);
-                    ingredient.put("sugar", sugar);
-                    ingredient.put("sodium", sodium);
-                    ingredient.put("fiber", fiber);
-                    ingredient.put("protein", protein);
-                    ingredient.put("calories", calories);
+                    ingredient.put("price", price);
+                    ingredient.put("type", type);
+                    ingredient.put("vegan", vegan);
+                    ingredient.put("vegetarian", vegetarian);
+                    ingredient.put("dairy", dairy);
+                    ingredient.put("gluten", gluten);
                     ingredient.put("name", name);
 
                     // adding ingredient to ingredient list
@@ -199,15 +193,31 @@ public class RestDetailActivity extends Activity {
 
                     // adding ingredient to expandable list view
                     List<String> details = new ArrayList<>();
-                    details.add("amount: " + num_units + " " + unit);
-                    //details.add("units: " + unit);
-                    details.add("calories: " + calories);
-                    //details.add("nutrition content units: " + ingr_units);
-                    details.add("fat: " + fat + "g per " + ingr_units);
-                    details.add("sugar: " + sugar + "g per " + ingr_units);
-                    details.add("sodium: " + sodium + "g per " + ingr_units);
-                    details.add("fiber: " + fiber + "g per " + ingr_units);
-                    details.add("protein: " + protein + "g per " + ingr_units);
+                    details.add("avg-price: " + price);
+                    details.add("type: " + type);
+
+                    String tags = "";
+
+                    if (vegan) {
+                        tags += "Vegan";
+                    }
+                    if (vegetarian) {
+                        tags += " Vegetarian";
+                    }
+                    if (dairy) {
+                        tags += " Dairy-Free";
+                    }
+                    if (gluten) {
+                        tags += " Gluten-Free";
+                    }
+                    if (tags.contains(" ")) {
+                        tags = tags.replace(" ", ", ");
+                        if (tags.startsWith(", ")) {
+                            tags = tags.substring(1);
+                        }
+                    }
+                    details.add(tags);
+
                     listDataHeader.add(name);
                     listDataChild.put(listDataHeader.get(i), details);
 
