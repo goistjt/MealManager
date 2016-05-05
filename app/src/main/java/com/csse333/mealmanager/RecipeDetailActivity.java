@@ -218,9 +218,7 @@ public class RecipeDetailActivity extends Activity {
                     // adding ingredient to expandable list view
                     List<String> details = new ArrayList<>();
                     details.add("amount: " + num_units + " " + unit);
-                    //details.add("units: " + unit);
                     details.add("calories: " + calories);
-                    //details.add("nutrition content units: " + ingr_units);
                     details.add("fat: " + fat + "g per " + ingr_units);
                     details.add("sugar: " + sugar + "g per " + ingr_units);
                     details.add("sodium: " + sodium + "g per " + ingr_units);
