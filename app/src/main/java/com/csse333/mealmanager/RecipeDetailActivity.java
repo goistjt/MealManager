@@ -128,7 +128,6 @@ public class RecipeDetailActivity extends Activity {
         cooking_instr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO : open a popup with the full recipe instr
                 if (cooking_instr.getMaxLines() == 3) {
                     cooking_instr.setMaxLines(20);
                 } else {
