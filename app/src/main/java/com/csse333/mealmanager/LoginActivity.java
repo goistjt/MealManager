@@ -164,7 +164,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     }
 
     private boolean isEmailValid(String email) {
-        return email.matches("[a-zA-Z0-9]+@[a-zA-Z0-9]+.[a-zA-Z]+");
+        return email.matches("[a-zA-Z0-9.]+@[a-zA-Z0-9]+.[a-zA-Z.]+");
     }
 
     private boolean isPasswordValid(String password) {

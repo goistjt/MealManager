@@ -20,6 +20,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -148,19 +149,16 @@ public class RegistrationActivity extends Activity {
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserRegisterTask(email, password, name);
-            //TODO: Replace this line so that it progresses to the correct page
             mAuthTask.execute((Void) null);
         }
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
+        return email.matches("[a-zA-Z0-9.]+@[a-zA-Z0-9]+.[a-zA-Z.]+");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 6 && password.length() < 24;
+        return ((password.length() >= 6) && (password.length() <= 24) && !password.equals(""));
     }
 
     /**
@@ -218,7 +216,6 @@ public class RegistrationActivity extends Activity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt registration against our DB.
             //params name, email, pw
             String charset = "UTF-8";
             String query = "";
@@ -249,6 +246,11 @@ public class RegistrationActivity extends Activity {
             showProgress(false);
 
             if (success && mEmail.equals(mReturnedEmail)) {
+                CharSequence text = "Registration Successful!";
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+                toast.show();
+
                 Intent intent = new Intent(RegistrationActivity.this, TaskSelectActivity.class);
                 intent.putExtra("user_id", mEmail);
                 startActivity(intent);
