@@ -63,7 +63,8 @@ public class RestDetailActivity extends Activity {
 
         expListView = (ExpandableListView) findViewById(R.id.expandableListView);
 
-        new getMenuItems().execute();
+        mItemsTask = new getMenuItems();
+        mItemsTask.execute();
     }
 
 
