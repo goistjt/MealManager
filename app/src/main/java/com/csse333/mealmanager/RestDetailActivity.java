@@ -84,7 +84,9 @@ public class RestDetailActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent logOutIntent = new Intent(RestDetailActivity.this, LoginActivity.class);
-                startActivity(logOutIntent);
+                ComponentName cn = logOutIntent.getComponent();
+                Intent mainIntent = IntentCompat.makeRestartActivityTask(cn);
+                startActivity(mainIntent);
                 finish();
             }
         });
