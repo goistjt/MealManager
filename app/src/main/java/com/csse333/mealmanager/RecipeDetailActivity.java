@@ -74,6 +74,7 @@ public class RecipeDetailActivity extends Activity {
         addToList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // TODO : add this logic
                 //mIngredientsTask = new getIngredients();
                 //mIngredientsTask.execute();
             }

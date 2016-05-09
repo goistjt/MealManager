@@ -99,7 +99,7 @@ public class TaskSelectActivity extends Activity {
             //"http://meal-manager.csse.srose-hulman.edu/Recipe"
             ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, TaskSelectActivity.this);
-            return true;
+            return mReturnedJSON != null;
         }
 
         @Override
@@ -132,7 +132,7 @@ public class TaskSelectActivity extends Activity {
             //"http://meal-manager.csse.srose-hulman.edu/Restaurant"
             ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, TaskSelectActivity.this);
-            return true;
+            return mReturnedJSON != null;
         }
 
         @Override
@@ -165,7 +165,7 @@ public class TaskSelectActivity extends Activity {
             //"http://meal-manager.csse.srose-hulman.edu/ShoppingList"
             ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, TaskSelectActivity.this);
-            return true;
+            return mReturnedJSON != null;
         }
 
         @Override

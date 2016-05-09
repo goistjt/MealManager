@@ -284,6 +284,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             //"http://meal-manager.csse.srose-hulman.edu/Login?"
             ServerConnections serverConnections = new ServerConnections();
             JSONObject jo = serverConnections.getRequest(query, LoginActivity.this);
+            if (jo == null) {
+                return false;
+            }
             try {
                 mReturnedEmail = jo.getString("email");
             } catch (JSONException e) {

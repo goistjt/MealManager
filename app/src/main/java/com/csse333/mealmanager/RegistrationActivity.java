@@ -231,6 +231,9 @@ public class RegistrationActivity extends Activity {
             //"http://meal-manager.csse.srose-hulman.edu/Register?" + params
             ServerConnections sc = new ServerConnections();
             JSONObject jo = sc.postRequest(query, RegistrationActivity.this);
+            if (jo == null) {
+                return false;
+            }
             try {
                 mReturnedEmail = jo.getString("email");
             } catch (JSONException e) {

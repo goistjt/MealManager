@@ -58,7 +58,7 @@ public class ServerConnections {
 
             int status = connection.getResponseCode();
             if (printStatusMessage(status)) {
-                return new JSONObject();
+                return null;
             }
 
             InputStream response = connection.getInputStream();

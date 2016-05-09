@@ -236,7 +236,7 @@ public class DineOutActivity extends ListActivity {
             //"http://meal-manager.csse.srose-hulman.edu/RestMenu"
             ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, DineOutActivity.this);
-            return true;
+            return mReturnedJSON != null;
         }
 
         @Override
@@ -275,7 +275,7 @@ public class DineOutActivity extends ListActivity {
             //"http://meal-manager.csse.srose-hulman.edu/Restaurant"
             ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, DineOutActivity.this);
-            return true;
+            return mReturnedJSON != null;
         }
 
         @Override
