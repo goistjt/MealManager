@@ -49,6 +49,12 @@
     <Button
         android:layout_width="50dp"
         android:layout_height="wrap_content"
+        android:id="@+id/menu_item_clear_shopping_list"
+        android:text="@string/action_bar_remove_all_from_shopping_list"/>
+
+    <Button
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
         android:id="@+id/menu_item_log_out"
         android:drawableTop="@mipmap/logout_icon" />
 

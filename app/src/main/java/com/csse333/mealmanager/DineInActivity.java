@@ -136,6 +136,8 @@ public class DineInActivity extends ListActivity {
                 mRecipeSearchTask.execute();
             }
         });
+
+        findViewById(R.id.menu_item_clear_shopping_list).setVisibility(View.GONE);
     }
 
     private class getRecipes extends AsyncTask<Void, Void, Void> {

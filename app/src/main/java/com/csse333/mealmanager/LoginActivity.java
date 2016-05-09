@@ -109,6 +109,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         findViewById(R.id.menu_item_log_out).setVisibility(View.GONE);
         findViewById(R.id.menu_search_layout).setVisibility(View.GONE);
+        findViewById(R.id.menu_item_clear_shopping_list).setVisibility(View.GONE);
     }
 
     /**

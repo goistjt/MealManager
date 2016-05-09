@@ -14,10 +14,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +36,8 @@ public class ShoppingListActivity extends ListActivity {
     private ListView mListView;
     ArrayList<HashMap<String, Object>> ingredientList;
     JSONArray ingredients = null;
+    private JSONObject mReturnedJSON = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +58,27 @@ public class ShoppingListActivity extends ListActivity {
         ingredientList = new ArrayList<>();
         mListView = getListView();
 
-        new getRecipes().execute();
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CharSequence text = "Long press to remove item from shopping list";
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(ShoppingListActivity.this, text, duration);
+                toast.show();
+            }
+        });
+
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String ingredient = (String) ingredientList.get(position).get("name");
+                // TODO : uncomment this after checking server call below
+                // new RemoveItemTask(ingredient).execute();
+                return true;
+            }
+        });
+
+        new getList().execute();
     }
 
 
@@ -80,10 +104,23 @@ public class ShoppingListActivity extends ListActivity {
             }
         });
 
+        final Button actionBarClearList = (Button) findViewById(R.id.menu_item_clear_shopping_list);
+        actionBarClearList.setMaxHeight(actionBar.getHeight());
+        actionBarClearList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (HashMap<String, Object> ingr : ingredientList) {
+                    String name = (String) ingr.get("name");
+                    // TODO : uncomment this after verifying server call below
+                    // new RemoveAllTask().execute();
+                }
+            }
+        });
+
         findViewById(R.id.menu_search_layout).setVisibility(View.GONE);
     }
 
-    private class getRecipes extends AsyncTask<Void, Void, Void> {
+    private class getList extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -145,4 +182,70 @@ public class ShoppingListActivity extends ListActivity {
 
     }
 
+    public class RemoveItemTask extends AsyncTask<Void, Void, Boolean> {
+
+        String ingr;
+        RemoveItemTask(String ingredient) {
+            this.ingr = ingredient;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO: verify this call
+            String query = String.format("RemoveIngredient?email=%sname=%s", mEmail, ingr);
+
+            //"http://meal-manager.csse.srose-hulman.edu/RemoveIngredient"
+            ServerConnections serverConnections = new ServerConnections();
+            mReturnedJSON = serverConnections.getRequest(query, ShoppingListActivity.this);
+            return mReturnedJSON != null;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (success) {
+                new ShoppingListTask().execute();
+            }
+        }
+    }
+
+    public class RemoveAllTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO: verify this call
+            String query = String.format("RemoveAllIngredients?email=%s", mEmail);
+
+            //"http://meal-manager.csse.srose-hulman.edu/RemoveAllIngredients"
+            ServerConnections serverConnections = new ServerConnections();
+            mReturnedJSON = serverConnections.getRequest(query, ShoppingListActivity.this);
+            return mReturnedJSON != null;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (success) {
+                new ShoppingListTask().execute();
+            }
+        }
+    }
+
+    public class ShoppingListTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            String query = String.format("ShoppingList?email=%s", mEmail);
+
+            //"http://meal-manager.csse.srose-hulman.edu/ShoppingList"
+            ServerConnections serverConnections = new ServerConnections();
+            mReturnedJSON = serverConnections.getRequest(query, ShoppingListActivity.this);
+            return mReturnedJSON != null;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (success) {
+                new getList().execute();
+            }
+        }
+    }
 }

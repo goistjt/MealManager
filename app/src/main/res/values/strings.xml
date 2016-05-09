@@ -32,6 +32,7 @@
     <string name="prompt_search">Search</string>
     <string name="action_bar_name_radio_button">Name</string>
     <string name="action_bar_type_radio_button">Type</string>
+    <string name="action_bar_remove_all_from_shopping_list">Remove All</string>
     <string-array name="search_type_array">
         <item>Name</item>
         <item>Type</item>

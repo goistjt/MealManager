@@ -126,6 +126,8 @@ public class DineOutActivity extends ListActivity {
                 mRestaurantSearchTask.execute();
             }
         });
+
+        findViewById(R.id.menu_item_clear_shopping_list).setVisibility(View.GONE);
     }
 
     private class getRestaurants extends AsyncTask<Void, Void, Void> {

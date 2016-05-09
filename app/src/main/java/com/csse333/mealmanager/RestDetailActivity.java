@@ -93,6 +93,7 @@ public class RestDetailActivity extends Activity {
         });
 
         findViewById(R.id.menu_search_layout).setVisibility(View.GONE);
+        findViewById(R.id.menu_item_clear_shopping_list).setVisibility(View.GONE);
     }
 
     private void screenSetUp() {
