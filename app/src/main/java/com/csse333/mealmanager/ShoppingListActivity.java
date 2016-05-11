@@ -182,6 +182,29 @@ public class ShoppingListActivity extends ListActivity {
 
     }
 
+    private boolean printStatusMessage(int status) {
+        // TODO: Fill in the rest of the error displays
+        CharSequence text = "";
+        switch (status) {
+            case 601:
+                // email & password don't correspond = 601
+                text = "Email & Password don't match";
+                break;
+            case 701:
+                // any args are missing = 701
+                text = "One or more arguments are missing";
+                break;
+            case 666:
+                // suspected injection attack = 666
+                text = "Your input cannot contain SQL!";
+                break;
+        }
+        Toast.makeText(ShoppingListActivity.this, text, Toast.LENGTH_SHORT).show();
+
+        System.out.println(status);
+        return (status != 200);
+    }
+
     public class RemoveItemTask extends AsyncTask<Void, Void, Boolean> {
 
         String ingr;
@@ -195,9 +218,18 @@ public class ShoppingListActivity extends ListActivity {
             String query = String.format("RemoveIngredient?email=%sname=%s", mEmail, ingr);
 
             //"http://meal-manager.csse.srose-hulman.edu/RemoveIngredient"
-            ServerConnections serverConnections = new ServerConnections();
+            final ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, ShoppingListActivity.this);
-            return mReturnedJSON != null;
+            if (mReturnedJSON == null) {
+                ShoppingListActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
         }
 
         @Override
@@ -216,9 +248,18 @@ public class ShoppingListActivity extends ListActivity {
             String query = String.format("RemoveAllIngredients?email=%s", mEmail);
 
             //"http://meal-manager.csse.srose-hulman.edu/RemoveAllIngredients"
-            ServerConnections serverConnections = new ServerConnections();
+            final ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, ShoppingListActivity.this);
-            return mReturnedJSON != null;
+            if (mReturnedJSON == null) {
+                ShoppingListActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
         }
 
         @Override
@@ -236,9 +277,18 @@ public class ShoppingListActivity extends ListActivity {
             String query = String.format("ShoppingList?email=%s", mEmail);
 
             //"http://meal-manager.csse.srose-hulman.edu/ShoppingList"
-            ServerConnections serverConnections = new ServerConnections();
+            final ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, ShoppingListActivity.this);
-            return mReturnedJSON != null;
+            if (mReturnedJSON == null) {
+                ShoppingListActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
         }
 
         @Override

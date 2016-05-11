@@ -1,13 +1,19 @@
 package com.csse333.mealmanager;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.IntentCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +26,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,7 +35,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class DineOutActivity extends ListActivity {
+public class DineOutActivity extends ListActivity implements LocationListener {
 
     private ProgressDialog pDialog;
     private String mEmail;
@@ -39,6 +46,9 @@ public class DineOutActivity extends ListActivity {
     private RestaurantSearchTask mRestaurantSearchTask = null;
     private MenuItemsTask mMenuItemTask = null;
     private JSONObject mReturnedJSON = null;
+    private Button actionBarSearch;
+    private LocationManager locMan;
+    private Location mLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,14 +108,15 @@ public class DineOutActivity extends ListActivity {
 
         Spinner spinner = (Spinner) findViewById(R.id.menu_search_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.search_type_array, android.R.layout.simple_spinner_item);
+                R.array.search_type_array_dine_out, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setSelection(0);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                searchBy[0] = parent.getItemAtPosition(position).equals("Name") ? "name" : "type";
+                searchBy[0] = parent.getItemAtPosition(position).equals("Name") ? "name" :
+                        parent.getItemAtPosition(position).equals("Type") ? "type" : "location";
             }
 
             @Override
@@ -115,13 +126,29 @@ public class DineOutActivity extends ListActivity {
             }
         });
 
-        final Button actionBarSearch = (Button) findViewById(R.id.menu_item_search);
+        actionBarSearch = (Button) findViewById(R.id.menu_item_search);
         actionBarSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                String query = searchText.getText().toString();
+                String query = "";
+                if (searchBy[0].equals("location")) {
+                    if (ActivityCompat.checkSelfPermission(DineOutActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        System.out.println("no permission");
+                        ActivityCompat.requestPermissions(DineOutActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                    }
+                    locMan = (LocationManager) DineOutActivity.this.getSystemService(Context.LOCATION_SERVICE);
+                    while (mLocation == null) {
+                        locMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, DineOutActivity.this);
+                        mLocation = locMan.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    }
+                    query += String.valueOf(mLocation.getLatitude()) + ",";
+                    query += String.valueOf(mLocation.getLongitude());
+                    System.out.println("location: " + query);
+                } else {
+                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    query = searchText.getText().toString();
+                }
                 mRestaurantSearchTask = new RestaurantSearchTask(query, searchBy[0]);
                 mRestaurantSearchTask.execute();
             }
@@ -129,6 +156,34 @@ public class DineOutActivity extends ListActivity {
 
         findViewById(R.id.menu_item_clear_shopping_list).setVisibility(View.GONE);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        this.actionBarSearch.performClick();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if (location != null) {
+            mLocation = location;
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                System.out.println("no permissions!");
+                ActivityCompat.requestPermissions(DineOutActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                return;
+            }
+            locMan.removeUpdates(this);
+        }
+        System.out.println("location was null");
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+    @Override
+    public void onProviderEnabled(String provider) {}
+
+    @Override
+    public void onProviderDisabled(String provider) {}
 
     private class getRestaurants extends AsyncTask<Void, Void, Void> {
 
@@ -223,6 +278,29 @@ public class DineOutActivity extends ListActivity {
 
     }
 
+    private boolean printStatusMessage(int status) {
+        // TODO: Fill in the rest of the error displays
+        CharSequence text = "";
+        switch (status) {
+            case 601:
+                // email & password don't correspond = 601
+                text = "Email & Password don't match";
+                break;
+            case 701:
+                // any args are missing = 701
+                text = "One or more arguments are missing";
+                break;
+            case 666:
+                // suspected injection attack = 666
+                text = "Your input cannot contain SQL!";
+                break;
+        }
+        Toast.makeText(DineOutActivity.this, text, Toast.LENGTH_SHORT).show();
+
+        System.out.println(status);
+        return (status != 200);
+    }
+
     private class MenuItemsTask extends AsyncTask<Void, Void, Boolean> {
 
         HashMap<String, Object> mRest;
@@ -236,9 +314,18 @@ public class DineOutActivity extends ListActivity {
             String query = String.format("RestMenu?rest_id=%s", mRest.get("rest_id"));
 
             //"http://meal-manager.csse.srose-hulman.edu/RestMenu"
-            ServerConnections serverConnections = new ServerConnections();
+            final ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, DineOutActivity.this);
-            return mReturnedJSON != null;
+            if (mReturnedJSON == null) {
+                DineOutActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
         }
 
         @Override
@@ -275,9 +362,18 @@ public class DineOutActivity extends ListActivity {
             String query = String.format("Restaurant?%s=%s", mSearchType, mSearchString);
 
             //"http://meal-manager.csse.srose-hulman.edu/Restaurant"
-            ServerConnections serverConnections = new ServerConnections();
+            final ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, DineOutActivity.this);
-            return mReturnedJSON != null;
+            if (mReturnedJSON == null) {
+                DineOutActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
         }
 
         @Override

@@ -27,6 +27,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -283,7 +284,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             String query = String.format("Login?email=%s&pw=%s", mEmail, mPassword);
 
             //"http://meal-manager.csse.srose-hulman.edu/Login?"
-            ServerConnections serverConnections = new ServerConnections();
+            final ServerConnections serverConnections = new ServerConnections();
             JSONObject jo = serverConnections.getRequest(query, LoginActivity.this);
             if (jo == null) {
                 return false;

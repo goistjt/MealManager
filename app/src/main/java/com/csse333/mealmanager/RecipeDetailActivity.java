@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.Scroller;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,9 +75,7 @@ public class RecipeDetailActivity extends Activity {
         addToList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO : add this logic
-                //mIngredientsTask = new getIngredients();
-                //mIngredientsTask.execute();
+                new AddIngredientsTask(mRecipes.get("recipe_id").toString()).execute();
             }
         });
 
@@ -254,5 +253,66 @@ public class RecipeDetailActivity extends Activity {
             expListView.setAdapter(listAdapter);
         }
 
+    }
+
+    private boolean printStatusMessage(int status) {
+        // TODO: Fill in the rest of the error displays
+        CharSequence text = "";
+        switch (status) {
+            case 601:
+                // email & password don't correspond = 601
+                text = "Email & Password don't match";
+                break;
+            case 701:
+                // any args are missing = 701
+                text = "One or more arguments are missing";
+                break;
+            case 666:
+                // suspected injection attack = 666
+                text = "Your input cannot contain SQL!";
+                break;
+        }
+        Toast.makeText(RecipeDetailActivity.this, text, Toast.LENGTH_SHORT).show();
+
+        System.out.println(status);
+        return (status != 200);
+    }
+
+    private class AddIngredientsTask extends AsyncTask<Void, Void, Boolean> {
+
+        String mRecipe_id;
+        JSONObject mReturnedJSON;
+
+        AddIngredientsTask(String recipe_id) {
+            mRecipe_id = recipe_id;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // post
+            String query = String.format("ShoppingList?email=%s&recipe_id=%s", mEmail, mRecipe_id);
+
+            //"http://meal-manager.csse.srose-hulman.edu/ShoppingList"
+            final ServerConnections serverConnections = new ServerConnections();
+            mReturnedJSON = serverConnections.postRequest(query, RecipeDetailActivity.this);
+            if (mReturnedJSON == null) {
+                RecipeDetailActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (success) {
+                CharSequence text = "Ingredients added!";
+                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }

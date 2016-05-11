@@ -33,9 +33,14 @@
     <string name="action_bar_name_radio_button">Name</string>
     <string name="action_bar_type_radio_button">Type</string>
     <string name="action_bar_remove_all_from_shopping_list">Remove All</string>
-    <string-array name="search_type_array">
+    <string-array name="search_type_array_dine_in">
         <item>Name</item>
         <item>Type</item>
+    </string-array>
+    <string-array name="search_type_array_dine_out">
+        <item>Name</item>
+        <item>Type</item>
+        <item>Nearby</item>
     </string-array>
 
     <!-- Various other strings -->

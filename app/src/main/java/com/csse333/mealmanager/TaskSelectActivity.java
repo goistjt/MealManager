@@ -12,6 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
+
+import com.google.android.gms.gcm.Task;
 
 import org.json.JSONObject;
 
@@ -88,19 +91,48 @@ public class TaskSelectActivity extends Activity {
         findViewById(R.id.menu_item_clear_shopping_list).setVisibility(View.GONE);
     }
 
-    public class DineInTask extends AsyncTask<Void, Void, Boolean> {
-
-        DineInTask() {
+    private boolean printStatusMessage(int status) {
+        // TODO: Fill in the rest of the error displays
+        CharSequence text = "";
+        switch (status) {
+            case 601:
+                // email & password don't correspond = 601
+                text = "Email & Password don't match";
+                break;
+            case 701:
+                // any args are missing = 701
+                text = "One or more arguments are missing";
+                break;
+            case 666:
+                // suspected injection attack = 666
+                text = "Your input cannot contain SQL!";
+                break;
         }
+        Toast.makeText(TaskSelectActivity.this, text, Toast.LENGTH_SHORT).show();
+
+        System.out.println(status);
+        return (status != 200);
+    }
+
+    public class DineInTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(Void... params) {
             String query = "Recipe";
 
             //"http://meal-manager.csse.srose-hulman.edu/Recipe"
-            ServerConnections serverConnections = new ServerConnections();
+            final ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, TaskSelectActivity.this);
-            return mReturnedJSON != null;
+            if (mReturnedJSON == null) {
+                TaskSelectActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
         }
 
         @Override
@@ -123,17 +155,23 @@ public class TaskSelectActivity extends Activity {
 
     public class DineOutTask extends AsyncTask<Void, Void, Boolean> {
 
-        DineOutTask() {
-        }
-
         @Override
         protected Boolean doInBackground(Void... params) {
             String query = "Restaurant";
 
             //"http://meal-manager.csse.srose-hulman.edu/Restaurant"
-            ServerConnections serverConnections = new ServerConnections();
+            final ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, TaskSelectActivity.this);
-            return mReturnedJSON != null;
+            if (mReturnedJSON == null) {
+                TaskSelectActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
         }
 
         @Override
@@ -156,17 +194,23 @@ public class TaskSelectActivity extends Activity {
 
     public class ShoppingListTask extends AsyncTask<Void, Void, Boolean> {
 
-        ShoppingListTask() {
-        }
-
         @Override
         protected Boolean doInBackground(Void... params) {
             String query = String.format("ShoppingList?email=%s", mEmail);
 
             //"http://meal-manager.csse.srose-hulman.edu/ShoppingList"
-            ServerConnections serverConnections = new ServerConnections();
+            final ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, TaskSelectActivity.this);
-            return mReturnedJSON != null;
+            if (mReturnedJSON == null) {
+                TaskSelectActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
         }
 
         @Override

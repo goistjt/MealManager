@@ -1,7 +1,6 @@
 package com.csse333.mealmanager;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +16,7 @@ public class ServerConnections {
     String url = "http://meal-manager.csse.rose-hulman.edu/";
     String charset = "UTF-8";
     Context context;
+    int statusCode;
 
     public JSONObject postRequest(String query, Context context) {
         HttpURLConnection connection = null;
@@ -26,9 +26,9 @@ public class ServerConnections {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Accept-Charset", charset);
 
-            int status = connection.getResponseCode();
-            if (printStatusMessage(status)) {
-                return new JSONObject();
+            this.statusCode = connection.getResponseCode();
+            if (this.statusCode != 200) {
+                return null;
             }
 
             InputStream response = connection.getInputStream();
@@ -56,8 +56,8 @@ public class ServerConnections {
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept-Charset", charset);
 
-            int status = connection.getResponseCode();
-            if (printStatusMessage(status)) {
+            this.statusCode = connection.getResponseCode();
+            if (this.statusCode != 200) {
                 return null;
             }
 
@@ -78,29 +78,8 @@ public class ServerConnections {
         return new JSONObject();
     }
 
-    private boolean printStatusMessage(int status) {
-        // TODO: Fill in the rest of the error displays
-
-        CharSequence text = "";
-        switch (status) {
-            case 601:
-                // email & password don't correspond = 601
-                text = "Email & Password don't match";
-                break;
-            case 701:
-                // any args are missing = 701
-                text = "One or more arguments are missing";
-                break;
-            case 666:
-                // suspected injection attack = 666
-                text = "Your input cannot contain SQL!";
-                break;
-        }
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(this.context, text, duration);
-        toast.show();
-
-        System.out.println(status);
-        return (status != 200);
+    public int getStatusCode() {
+        return this.statusCode;
     }
+
 }

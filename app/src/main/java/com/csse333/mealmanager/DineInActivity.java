@@ -28,6 +28,7 @@ import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -108,7 +109,7 @@ public class DineInActivity extends ListActivity {
 
         Spinner spinner = (Spinner) findViewById(R.id.menu_search_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.search_type_array, android.R.layout.simple_spinner_item);
+                R.array.search_type_array_dine_in, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setSelection(0);
@@ -224,6 +225,29 @@ public class DineInActivity extends ListActivity {
         }
     }
 
+    private boolean printStatusMessage(int status) {
+        // TODO: Fill in the rest of the error displays
+        CharSequence text = "";
+        switch (status) {
+            case 601:
+                // email & password don't correspond = 601
+                text = "Email & Password don't match";
+                break;
+            case 701:
+                // any args are missing = 701
+                text = "One or more arguments are missing";
+                break;
+            case 666:
+                // suspected injection attack = 666
+                text = "Your input cannot contain SQL!";
+                break;
+        }
+        Toast.makeText(DineInActivity.this, text, Toast.LENGTH_SHORT).show();
+
+        System.out.println(status);
+        return (status != 200);
+    }
+
     private class RecipeTask extends AsyncTask<Void, Void, Boolean> {
 
         HashMap<String, Object> mRecipe;
@@ -237,9 +261,18 @@ public class DineInActivity extends ListActivity {
             String query = String.format("Ingredients?recipe_id=%s", mRecipe.get("recipe_id"));
 
             //"http://meal-manager.csse.srose-hulman.edu/Ingredients"
-            ServerConnections serverConnections = new ServerConnections();
+            final ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, DineInActivity.this);
-            return mReturnedJSON != null;
+            if (mReturnedJSON == null) {
+                DineInActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
         }
 
         @Override
@@ -276,9 +309,18 @@ public class DineInActivity extends ListActivity {
             String query = String.format("Recipe?%s=%s", mSearchType, mSearchString);
 
             //"http://meal-manager.csse.srose-hulman.edu/Recipe"
-            ServerConnections serverConnections = new ServerConnections();
+            final ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query, DineInActivity.this);
-            return mReturnedJSON != null;
+            if (mReturnedJSON == null) {
+                DineInActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
         }
 
         @Override
