@@ -63,6 +63,7 @@ public class TaskSelectActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //TODO: Implement this server call and following screen
+                //new FavoriteRecipesTask().execute();
             }
         });
 
@@ -71,6 +72,7 @@ public class TaskSelectActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //TODO: Implement this server call and following screen
+                //new FavoriteRestsTask().execute();
             }
         });
     }
@@ -153,6 +155,7 @@ public class TaskSelectActivity extends Activity {
                 Intent intent = new Intent(TaskSelectActivity.this, DineInActivity.class);
                 intent.putExtra("user_id", mEmail);
                 intent.putExtra("recipes", mReturnedJSON.toString());
+                intent.putExtra("type", "all");
                 startActivity(intent);
             }
         }
@@ -192,6 +195,7 @@ public class TaskSelectActivity extends Activity {
                 Intent intent = new Intent(TaskSelectActivity.this, DineOutActivity.class);
                 intent.putExtra("user_id", mEmail);
                 intent.putExtra("restaurants", mReturnedJSON.toString());
+                intent.putExtra("type", "all");
                 startActivity(intent);
             }
         }
@@ -240,4 +244,71 @@ public class TaskSelectActivity extends Activity {
             mShoppingListTask = null;
         }
     }
+
+    public class FavoriteRecipesTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            String query = String.format("Likes?email=%s", mEmail);
+
+            final ServerConnections serverConnections = new ServerConnections();
+            mReturnedJSON = serverConnections.getRequest(query, TaskSelectActivity.this);
+            if (mReturnedJSON == null) {
+                TaskSelectActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            // TODO : fix this navigation
+            if (success) {
+                Intent intent = new Intent(TaskSelectActivity.this, DineInActivity.class);
+                intent.putExtra("user_id", mEmail);
+                intent.putExtra("recipes", mReturnedJSON.toString());
+                intent.putExtra("type", "like");
+                startActivity(intent);
+            }
+        }
+    }
+
+    public class FavoriteRestsTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            String query = String.format("Enjoys?email=%s", mEmail);
+
+            final ServerConnections serverConnections = new ServerConnections();
+            mReturnedJSON = serverConnections.getRequest(query, TaskSelectActivity.this);
+            if (mReturnedJSON == null) {
+                TaskSelectActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            // TODO: fix this navigation call
+            if (success) {
+                Intent intent = new Intent(TaskSelectActivity.this, DineOutActivity.class);
+                intent.putExtra("user_id", mEmail);
+                intent.putExtra("restaurants", mReturnedJSON.toString());
+                intent.putExtra("type", "like");
+                startActivity(intent);
+            }
+        }
+    }
+
 }

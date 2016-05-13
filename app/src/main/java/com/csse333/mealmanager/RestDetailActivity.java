@@ -5,23 +5,22 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.IntentCompat;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,10 +28,9 @@ import java.util.List;
 public class RestDetailActivity extends Activity {
 
     private String mEmail;
+    private String mType;
     private HashMap<String, Object> mDetails;
     private JSONObject mMenuItems;
-    private ProgressDialog pDialog;
-    private getMenuItems mItemsTask = null;
 
     ArrayList<HashMap<String, Object>> menuItemList;
     ExpandableListAdapter listAdapter;
@@ -49,6 +47,7 @@ public class RestDetailActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         assert extras != null;
         mEmail = extras.getString("user_id");
+        mType = extras.getString("type");
         mDetails = (HashMap<String, Object>) extras.get("rest_info");
         try {
             mMenuItems = new JSONObject(extras.get("menu_items").toString());
@@ -76,15 +75,19 @@ public class RestDetailActivity extends Activity {
         });
 
         Button enjoyRestaurant = (Button) findViewById(R.id.rest_details_like_button);
-        enjoyRestaurant.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO: Implement this server call
-            }
-        });
+        if (mType.equals("like")) {
+            enjoyRestaurant.setVisibility(View.GONE);
+        } else {
+            enjoyRestaurant.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String rest_id = (int) mDetails.get("rest_id") + "";
+                    new LikeRestTask(rest_id).execute();
+                }
+            });
+        }
 
-        mItemsTask = new getMenuItems();
-        mItemsTask.execute();
+        new getMenuItems().execute();
     }
 
 
@@ -257,5 +260,73 @@ public class RestDetailActivity extends Activity {
             expListView.setAdapter(listAdapter);
         }
 
+    }
+
+    private boolean printStatusMessage(int status) {
+        // TODO: Fill in the rest of the error displays
+        CharSequence text = "";
+        switch (status) {
+            case 601:
+                // email & password don't correspond = 601
+                text = "Email & Password don't match";
+                break;
+            case 701:
+                // any args are missing = 701
+                text = "One or more arguments are missing";
+                break;
+            case 666:
+                // suspected injection attack = 666
+                text = "Your input cannot contain SQL!";
+                break;
+        }
+        Toast.makeText(RestDetailActivity.this, text, Toast.LENGTH_SHORT).show();
+
+        System.out.println(status);
+        return (status != 200);
+    }
+
+    private class LikeRestTask extends AsyncTask<Void, Void, Boolean> {
+
+        JSONObject mReturnedJSON;
+        private String rest_id;
+
+        LikeRestTask(String id) {
+            this.rest_id = id;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // post
+            String charset = "UTF-8";
+            String query = "";
+            try {
+                query = String.format("RestEnjoy?email=%s&rest_id=%s",
+                        URLEncoder.encode(mEmail, charset),
+                        URLEncoder.encode(rest_id, charset));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            final ServerConnections serverConnections = new ServerConnections();
+            mReturnedJSON = serverConnections.postRequest(query, RestDetailActivity.this);
+            if (mReturnedJSON == null) {
+                RestDetailActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (success) {
+                CharSequence text = "Restaurant Liked!";
+                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }

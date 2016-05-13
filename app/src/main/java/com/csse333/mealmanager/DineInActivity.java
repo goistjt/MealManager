@@ -41,6 +41,7 @@ public class DineInActivity extends ListActivity {
 
     private ProgressDialog pDialog;
     private String mEmail;
+    private String mType;
     private JSONObject mRecipes;
     private ListView mListView;
     ArrayList<HashMap<String, Object>> recipeList;
@@ -53,17 +54,18 @@ public class DineInActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_list_view);
-        addActionBar(getActionBar());
 
         Bundle extras = getIntent().getExtras();
         assert extras != null;
         mEmail = extras.getString("user_id");
+        mType = extras.getString("type");
         try {
             mRecipes = new JSONObject(getIntent().getStringExtra("recipes"));
             System.out.println(mRecipes);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        addActionBar(getActionBar());
 
         recipeList = new ArrayList<>();
         mListView = getListView();
@@ -104,39 +106,43 @@ public class DineInActivity extends ListActivity {
             }
         });
 
-        final EditText searchText = (EditText) findViewById(R.id.menu_search_bar);
-        final String[] searchBy = {""};
+        if (mType.equals("like")) {
+            findViewById(R.id.menu_search_layout).setVisibility(View.GONE);
+        } else {
+            final EditText searchText = (EditText) findViewById(R.id.menu_search_bar);
+            final String[] searchBy = {""};
 
-        Spinner spinner = (Spinner) findViewById(R.id.menu_search_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.search_type_array_dine_in, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setSelection(0);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                searchBy[0] = parent.getItemAtPosition(position).equals("Name") ? "name" : "type";
-            }
+            Spinner spinner = (Spinner) findViewById(R.id.menu_search_spinner);
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                    R.array.search_type_array_dine_in, android.R.layout.simple_spinner_item);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(adapter);
+            spinner.setSelection(0);
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    searchBy[0] = parent.getItemAtPosition(position).equals("Name") ? "name" : "type";
+                }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // default selection
-                searchBy[0] = "name";
-            }
-        });
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    // default selection
+                    searchBy[0] = "name";
+                }
+            });
 
-        final Button actionBarSearch = (Button) findViewById(R.id.menu_item_search);
-        actionBarSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                String query = searchText.getText().toString();
-                mRecipeSearchTask = new RecipeSearchTask(query, searchBy[0]);
-                mRecipeSearchTask.execute();
-            }
-        });
+            final Button actionBarSearch = (Button) findViewById(R.id.menu_item_search);
+            actionBarSearch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    String query = searchText.getText().toString();
+                    mRecipeSearchTask = new RecipeSearchTask(query, searchBy[0]);
+                    mRecipeSearchTask.execute();
+                }
+            });
+        }
 
         findViewById(R.id.menu_item_clear_shopping_list).setVisibility(View.GONE);
     }
@@ -284,6 +290,7 @@ public class DineInActivity extends ListActivity {
                 intent.putExtra("user_id", mEmail);
                 intent.putExtra("recipe_details", mRecipe);
                 intent.putExtra("ingredients", mReturnedJSON.toString());
+                intent.putExtra("type", "all");
                 startActivity(intent);
             }
         }

@@ -39,6 +39,7 @@ import java.util.Objects;
 public class RecipeDetailActivity extends Activity {
 
     private String mEmail;
+    private String mType;
     private JSONObject mIngredients;
     private ProgressDialog pDialog;
     ArrayList<HashMap<String, String>> ingredientList;
@@ -58,6 +59,7 @@ public class RecipeDetailActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         assert extras != null;
         mEmail = extras.getString("user_id");
+        mType = extras.getString("type");
         mRecipes = (HashMap<String, Object>) extras.get("recipe_details");
         try {
             mIngredients = new JSONObject(extras.getString("ingredients"));
@@ -82,12 +84,18 @@ public class RecipeDetailActivity extends Activity {
         });
 
         Button likeRecipe = (Button) findViewById(R.id.recipe_details_like_button);
-        likeRecipe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO: Implement this server call
-            }
-        });
+        if (mType.equals("like")) {
+            likeRecipe.setVisibility(View.GONE);
+        } else {
+            likeRecipe.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //TODO: Check this server call
+                    String recipe_id = (String) mRecipes.get("recipe_id");
+                    new LikeRecipeTask(recipe_id).execute();
+                }
+            });
+        }
 
         new getIngredients().execute();
     }
@@ -286,6 +294,51 @@ public class RecipeDetailActivity extends Activity {
 
         System.out.println(status);
         return (status != 200);
+    }
+
+    private class LikeRecipeTask extends AsyncTask<Void, Void, Boolean> {
+
+        JSONObject mReturnedJSON;
+        private String recipe_id;
+
+        LikeRecipeTask(String id) {
+            this.recipe_id = id;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // post
+            String charset = "UTF-8";
+            String query = "";
+            try {
+                query = String.format("RecipeLike?email=%s&recipe_id=%s",
+                        URLEncoder.encode(mEmail, charset),
+                        URLEncoder.encode(recipe_id, charset));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            final ServerConnections serverConnections = new ServerConnections();
+            mReturnedJSON = serverConnections.postRequest(query, RecipeDetailActivity.this);
+            if (mReturnedJSON == null) {
+                RecipeDetailActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (success) {
+                CharSequence text = "Recipe Liked!";
+                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     private class AddIngredientsTask extends AsyncTask<Void, Void, Boolean> {

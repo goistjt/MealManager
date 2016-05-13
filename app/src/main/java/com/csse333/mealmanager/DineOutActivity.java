@@ -39,6 +39,7 @@ public class DineOutActivity extends ListActivity implements LocationListener {
 
     private ProgressDialog pDialog;
     private String mEmail;
+    private String mType;
     private JSONObject mRestaurants;
     private ListView mListView;
     ArrayList<HashMap<String, Object>> restList;
@@ -54,16 +55,17 @@ public class DineOutActivity extends ListActivity implements LocationListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_list_view);
-        addActionBar(getActionBar());
 
         Bundle extras = getIntent().getExtras();
         assert extras != null;
         mEmail = extras.getString("user_id");
+        mType = extras.getString("type");
         try {
             mRestaurants = new JSONObject(getIntent().getStringExtra("restaurants"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        addActionBar(getActionBar());
 
         restList = new ArrayList<>();
         mListView = getListView();
@@ -103,56 +105,60 @@ public class DineOutActivity extends ListActivity implements LocationListener {
             }
         });
 
-        final EditText searchText = (EditText) findViewById(R.id.menu_search_bar);
-        final String[] searchBy = {""};
+        if (mType.equals("like")) {
+            findViewById(R.id.menu_search_layout).setVisibility(View.GONE);
+        } else {
+            final EditText searchText = (EditText) findViewById(R.id.menu_search_bar);
+            final String[] searchBy = {""};
 
-        Spinner spinner = (Spinner) findViewById(R.id.menu_search_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.search_type_array_dine_out, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setSelection(0);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                searchBy[0] = parent.getItemAtPosition(position).equals("Name") ? "name" :
-                        parent.getItemAtPosition(position).equals("Type") ? "type" : "location";
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // default selection
-                searchBy[0] = "name";
-            }
-        });
-
-        actionBarSearch = (Button) findViewById(R.id.menu_item_search);
-        actionBarSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String query = "";
-                if (searchBy[0].equals("location")) {
-                    if (ActivityCompat.checkSelfPermission(DineOutActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        System.out.println("no permission");
-                        ActivityCompat.requestPermissions(DineOutActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-                    }
-                    locMan = (LocationManager) DineOutActivity.this.getSystemService(Context.LOCATION_SERVICE);
-                    while (mLocation == null) {
-                        locMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, DineOutActivity.this);
-                        mLocation = locMan.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    }
-                    query += String.valueOf(mLocation.getLatitude()) + ",";
-                    query += String.valueOf(mLocation.getLongitude());
-                    System.out.println("location: " + query);
-                } else {
-                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    query = searchText.getText().toString();
+            Spinner spinner = (Spinner) findViewById(R.id.menu_search_spinner);
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                    R.array.search_type_array_dine_out, android.R.layout.simple_spinner_item);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(adapter);
+            spinner.setSelection(0);
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    searchBy[0] = parent.getItemAtPosition(position).equals("Name") ? "name" :
+                            parent.getItemAtPosition(position).equals("Type") ? "type" : "location";
                 }
-                mRestaurantSearchTask = new RestaurantSearchTask(query, searchBy[0]);
-                mRestaurantSearchTask.execute();
-            }
-        });
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    // default selection
+                    searchBy[0] = "name";
+                }
+            });
+
+            actionBarSearch = (Button) findViewById(R.id.menu_item_search);
+            actionBarSearch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String query = "";
+                    if (searchBy[0].equals("location")) {
+                        if (ActivityCompat.checkSelfPermission(DineOutActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            System.out.println("no permission");
+                            ActivityCompat.requestPermissions(DineOutActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                        }
+                        locMan = (LocationManager) DineOutActivity.this.getSystemService(Context.LOCATION_SERVICE);
+                        while (mLocation == null) {
+                            locMan.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, DineOutActivity.this);
+                            mLocation = locMan.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        }
+                        query += String.valueOf(mLocation.getLatitude()) + ",";
+                        query += String.valueOf(mLocation.getLongitude());
+                        System.out.println("location: " + query);
+                    } else {
+                        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                        query = searchText.getText().toString();
+                    }
+                    mRestaurantSearchTask = new RestaurantSearchTask(query, searchBy[0]);
+                    mRestaurantSearchTask.execute();
+                }
+            });
+        }
 
         findViewById(R.id.menu_item_clear_shopping_list).setVisibility(View.GONE);
     }
@@ -177,13 +183,16 @@ public class DineOutActivity extends ListActivity implements LocationListener {
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {}
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
 
     @Override
-    public void onProviderEnabled(String provider) {}
+    public void onProviderEnabled(String provider) {
+    }
 
     @Override
-    public void onProviderDisabled(String provider) {}
+    public void onProviderDisabled(String provider) {
+    }
 
     private class getRestaurants extends AsyncTask<Void, Void, Void> {
 
@@ -337,6 +346,7 @@ public class DineOutActivity extends ListActivity implements LocationListener {
                 intent.putExtra("user_id", mEmail);
                 intent.putExtra("rest_info", mRest);
                 intent.putExtra("menu_items", mReturnedJSON.toString());
+                intent.putExtra("type", mType);
                 startActivity(intent);
             }
         }
