@@ -29,6 +29,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -290,7 +292,15 @@ public class RecipeDetailActivity extends Activity {
         @Override
         protected Boolean doInBackground(Void... params) {
             // post
-            String query = String.format("ShoppingList?email=%s&recipe_id=%s", mEmail, mRecipe_id);
+            String charset = "UTF-8";
+            String query = "";
+            try {
+                query = String.format("ShoppingList?email=%s&recipe_id=%s",
+                        URLEncoder.encode(mEmail, charset),
+                        URLEncoder.encode(mRecipe_id, charset));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
 
             //"http://meal-manager.csse.srose-hulman.edu/ShoppingList"
             final ServerConnections serverConnections = new ServerConnections();
