@@ -1,7 +1,5 @@
 package com.csse333.mealmanager;
 
-import android.content.Context;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,12 +13,10 @@ import java.net.URL;
 public class ServerConnections {
     String url = "http://meal-manager.csse.rose-hulman.edu/";
     String charset = "UTF-8";
-    Context context;
     int statusCode;
 
-    public JSONObject postRequest(String query, Context context) {
+    public JSONObject postRequest(String query) {
         HttpURLConnection connection = null;
-        this.context = context;
         try {
             connection = (HttpURLConnection) new URL(url + query).openConnection();
             connection.setRequestMethod("POST");
@@ -48,9 +44,8 @@ public class ServerConnections {
         return new JSONObject();
     }
 
-    public JSONObject getRequest(String query, Context context) {
+    public JSONObject getRequest(String query) {
         HttpURLConnection connection = null;
-        this.context = context;
         try {
             connection = (HttpURLConnection) new URL(url + query).openConnection();
             connection.setRequestMethod("GET");
@@ -76,6 +71,23 @@ public class ServerConnections {
             e.printStackTrace();
         }
         return new JSONObject();
+    }
+
+    public boolean deleteRequest(String query) {
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) new URL(url + query).openConnection();
+            connection.setRequestMethod("DELETE");
+            connection.setRequestProperty("Accept-Charset", charset);
+
+            this.statusCode = connection.getResponseCode();
+            if (this.statusCode != 200) {
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     public int getStatusCode() {

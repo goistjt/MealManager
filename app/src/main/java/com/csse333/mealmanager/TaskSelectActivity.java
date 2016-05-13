@@ -62,7 +62,7 @@ public class TaskSelectActivity extends Activity {
         favoriteRecipes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Implement this server call and following screen
+                //TODO: uncomment this after checking server call
                 //new FavoriteRecipesTask().execute();
             }
         });
@@ -71,7 +71,7 @@ public class TaskSelectActivity extends Activity {
         favoriteRests.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: Implement this server call and following screen
+                //TODO: uncomment this after checking server call
                 //new FavoriteRestsTask().execute();
             }
         });
@@ -134,7 +134,7 @@ public class TaskSelectActivity extends Activity {
 
             //"http://meal-manager.csse.srose-hulman.edu/Recipe"
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.getRequest(query, TaskSelectActivity.this);
+            mReturnedJSON = serverConnections.getRequest(query);
             if (mReturnedJSON == null) {
                 TaskSelectActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -174,7 +174,7 @@ public class TaskSelectActivity extends Activity {
 
             //"http://meal-manager.csse.srose-hulman.edu/Restaurant"
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.getRequest(query, TaskSelectActivity.this);
+            mReturnedJSON = serverConnections.getRequest(query);
             if (mReturnedJSON == null) {
                 TaskSelectActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -214,7 +214,7 @@ public class TaskSelectActivity extends Activity {
 
             //"http://meal-manager.csse.srose-hulman.edu/ShoppingList"
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.getRequest(query, TaskSelectActivity.this);
+            mReturnedJSON = serverConnections.getRequest(query);
             if (mReturnedJSON == null) {
                 TaskSelectActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -252,7 +252,7 @@ public class TaskSelectActivity extends Activity {
             String query = String.format("Likes?email=%s", mEmail);
 
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.getRequest(query, TaskSelectActivity.this);
+            mReturnedJSON = serverConnections.getRequest(query);
             if (mReturnedJSON == null) {
                 TaskSelectActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -267,7 +267,6 @@ public class TaskSelectActivity extends Activity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            // TODO : fix this navigation
             if (success) {
                 Intent intent = new Intent(TaskSelectActivity.this, DineInActivity.class);
                 intent.putExtra("user_id", mEmail);
@@ -285,7 +284,7 @@ public class TaskSelectActivity extends Activity {
             String query = String.format("Enjoys?email=%s", mEmail);
 
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.getRequest(query, TaskSelectActivity.this);
+            mReturnedJSON = serverConnections.getRequest(query);
             if (mReturnedJSON == null) {
                 TaskSelectActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -300,7 +299,6 @@ public class TaskSelectActivity extends Activity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            // TODO: fix this navigation call
             if (success) {
                 Intent intent = new Intent(TaskSelectActivity.this, DineOutActivity.class);
                 intent.putExtra("user_id", mEmail);

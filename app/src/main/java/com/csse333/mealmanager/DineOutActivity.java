@@ -324,7 +324,7 @@ public class DineOutActivity extends ListActivity implements LocationListener {
 
             //"http://meal-manager.csse.srose-hulman.edu/RestMenu"
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.getRequest(query, DineOutActivity.this);
+            mReturnedJSON = serverConnections.getRequest(query);
             if (mReturnedJSON == null) {
                 DineOutActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -373,7 +373,7 @@ public class DineOutActivity extends ListActivity implements LocationListener {
 
             //"http://meal-manager.csse.srose-hulman.edu/Restaurant"
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.getRequest(query, DineOutActivity.this);
+            mReturnedJSON = serverConnections.getRequest(query);
             if (mReturnedJSON == null) {
                 DineOutActivity.this.runOnUiThread(new Runnable() {
                     @Override

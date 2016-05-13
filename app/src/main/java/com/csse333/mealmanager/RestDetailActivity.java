@@ -308,7 +308,7 @@ public class RestDetailActivity extends Activity {
             }
 
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.postRequest(query, RestDetailActivity.this);
+            mReturnedJSON = serverConnections.postRequest(query);
             if (mReturnedJSON == null) {
                 RestDetailActivity.this.runOnUiThread(new Runnable() {
                     @Override

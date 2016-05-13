@@ -268,7 +268,7 @@ public class DineInActivity extends ListActivity {
 
             //"http://meal-manager.csse.srose-hulman.edu/Ingredients"
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.getRequest(query, DineInActivity.this);
+            mReturnedJSON = serverConnections.getRequest(query);
             if (mReturnedJSON == null) {
                 DineInActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -317,7 +317,7 @@ public class DineInActivity extends ListActivity {
 
             //"http://meal-manager.csse.srose-hulman.edu/Recipe"
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.getRequest(query, DineInActivity.this);
+            mReturnedJSON = serverConnections.getRequest(query);
             if (mReturnedJSON == null) {
                 DineInActivity.this.runOnUiThread(new Runnable() {
                     @Override

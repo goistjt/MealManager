@@ -215,12 +215,12 @@ public class ShoppingListActivity extends ListActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: verify this call
-            String query = String.format("RemoveIngredient?email=%sname=%s", mEmail, ingr);
+            String query = String.format("ShoppingList?email=%singr=%s", mEmail, ingr);
 
             //"http://meal-manager.csse.srose-hulman.edu/RemoveIngredient"
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.getRequest(query, ShoppingListActivity.this);
-            if (mReturnedJSON == null) {
+            boolean mReturned = serverConnections.deleteRequest(query);
+            if (!mReturned) {
                 ShoppingListActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -245,12 +245,12 @@ public class ShoppingListActivity extends ListActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: verify this call
-            String query = String.format("RemoveAllIngredients?email=%s", mEmail);
+            String query = String.format("ShoppingList?email=%s", mEmail);
 
             //"http://meal-manager.csse.srose-hulman.edu/RemoveAllIngredients"
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.getRequest(query, ShoppingListActivity.this);
-            if (mReturnedJSON == null) {
+            boolean mReturned = serverConnections.deleteRequest(query);
+            if (!mReturned) {
                 ShoppingListActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -278,7 +278,7 @@ public class ShoppingListActivity extends ListActivity {
 
             //"http://meal-manager.csse.srose-hulman.edu/ShoppingList"
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.getRequest(query, ShoppingListActivity.this);
+            mReturnedJSON = serverConnections.getRequest(query);
             if (mReturnedJSON == null) {
                 ShoppingListActivity.this.runOnUiThread(new Runnable() {
                     @Override

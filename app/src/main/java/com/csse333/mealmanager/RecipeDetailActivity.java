@@ -90,7 +90,6 @@ public class RecipeDetailActivity extends Activity {
             likeRecipe.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO: Check this server call
                     String recipe_id = (String) mRecipes.get("recipe_id");
                     new LikeRecipeTask(recipe_id).execute();
                 }
@@ -307,7 +306,7 @@ public class RecipeDetailActivity extends Activity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // post
+            //TODO: Check this server call
             String charset = "UTF-8";
             String query = "";
             try {
@@ -319,7 +318,7 @@ public class RecipeDetailActivity extends Activity {
             }
 
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.postRequest(query, RecipeDetailActivity.this);
+            mReturnedJSON = serverConnections.postRequest(query);
             if (mReturnedJSON == null) {
                 RecipeDetailActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -365,7 +364,7 @@ public class RecipeDetailActivity extends Activity {
 
             //"http://meal-manager.csse.srose-hulman.edu/ShoppingList"
             final ServerConnections serverConnections = new ServerConnections();
-            mReturnedJSON = serverConnections.postRequest(query, RecipeDetailActivity.this);
+            mReturnedJSON = serverConnections.postRequest(query);
             if (mReturnedJSON == null) {
                 RecipeDetailActivity.this.runOnUiThread(new Runnable() {
                     @Override

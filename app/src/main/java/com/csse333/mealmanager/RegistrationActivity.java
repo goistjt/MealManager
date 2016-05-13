@@ -231,7 +231,7 @@ public class RegistrationActivity extends Activity {
 
             //"http://meal-manager.csse.srose-hulman.edu/Register?" + params
             ServerConnections sc = new ServerConnections();
-            JSONObject jo = sc.postRequest(query, RegistrationActivity.this);
+            JSONObject jo = sc.postRequest(query);
             if (jo == null) {
                 return false;
             }
