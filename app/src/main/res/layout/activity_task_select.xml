@@ -34,7 +34,21 @@
             android:id="@+id/dine_out_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:text="@string/dine_out"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/favorite_restaurants"
+            android:id="@+id/favorite_restaurants_button"
+            android:layout_marginBottom="16dp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/favorite_recipes"
+            android:id="@+id/favorite_recipes_button"/>
 
     </LinearLayout>
 

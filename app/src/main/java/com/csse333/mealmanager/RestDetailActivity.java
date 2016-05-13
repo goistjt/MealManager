@@ -63,6 +63,26 @@ public class RestDetailActivity extends Activity {
 
         expListView = (ExpandableListView) findViewById(R.id.expandableListView);
 
+        Button leaveReview = (Button) findViewById(R.id.rest_details_review_button);
+        leaveReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int rest_id = (int) mDetails.get("rest_id");
+                Intent intent = new Intent(RestDetailActivity.this, PostReviewActivity.class);
+                intent.putExtra("rest_id", rest_id);
+                intent.putExtra("user_id", mEmail);
+                startActivity(intent);
+            }
+        });
+
+        Button enjoyRestaurant = (Button) findViewById(R.id.rest_details_like_button);
+        enjoyRestaurant.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: Implement this server call
+            }
+        });
+
         mItemsTask = new getMenuItems();
         mItemsTask.execute();
     }

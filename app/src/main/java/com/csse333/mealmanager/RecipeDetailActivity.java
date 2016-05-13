@@ -81,6 +81,14 @@ public class RecipeDetailActivity extends Activity {
             }
         });
 
+        Button likeRecipe = (Button) findViewById(R.id.recipe_details_like_button);
+        likeRecipe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: Implement this server call
+            }
+        });
+
         new getIngredients().execute();
     }
 

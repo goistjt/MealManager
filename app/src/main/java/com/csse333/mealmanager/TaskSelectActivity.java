@@ -3,18 +3,12 @@ package com.csse333.mealmanager;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
-
-import com.google.android.gms.gcm.Task;
 
 import org.json.JSONObject;
 
@@ -61,6 +55,22 @@ public class TaskSelectActivity extends Activity {
             public void onClick(View v) {
                 mShoppingListTask = new ShoppingListTask();
                 mShoppingListTask.execute((Void) null);
+            }
+        });
+
+        Button favoriteRecipes = (Button) findViewById(R.id.favorite_recipes_button);
+        favoriteRecipes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: Implement this server call and following screen
+            }
+        });
+
+        Button favoriteRests = (Button) findViewById(R.id.favorite_restaurants_button);
+        favoriteRests.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: Implement this server call and following screen
             }
         });
     }

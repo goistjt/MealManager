@@ -33,6 +33,12 @@
     <string name="action_bar_name_radio_button">Name</string>
     <string name="action_bar_type_radio_button">Type</string>
     <string name="action_bar_remove_all_from_shopping_list">Remove All</string>
+    <string name="like">Like</string>
+    <string name="favorite_recipes">Favorite Recipes</string>
+    <string name="favorite_restaurants">Favorite Restaurants</string>
+    <string name="leave_review">Leave a Review</string>
+    <string name="enter_your_review_here">Enter your Review Here</string>
+    <string name="post_review">Post Review</string>
     <string-array name="search_type_array_dine_in">
         <item>Name</item>
         <item>Type</item>
