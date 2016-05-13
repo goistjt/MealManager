@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -28,7 +29,41 @@ public class ServerConnections {
             }
 
             InputStream response = connection.getInputStream();
-            BufferedReader bR = new BufferedReader(  new InputStreamReader(response));
+            BufferedReader bR = new BufferedReader(new InputStreamReader(response));
+            String line = "";
+
+            StringBuilder responseStrBuilder = new StringBuilder();
+            while((line =  bR.readLine()) != null){
+                responseStrBuilder.append(line);
+            }
+            response.close();
+            return new JSONObject(responseStrBuilder.toString());
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return new JSONObject();
+    }
+
+    // TODO: check this call
+    public JSONObject updateRequest(String query) {
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) new URL(url + query).openConnection();
+            connection.setRequestMethod("PUT");
+            connection.setRequestProperty("Accept-Charset", charset);
+
+            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+            out.write("Resource content");
+            out.close();
+
+            this.statusCode = connection.getResponseCode();
+            if (this.statusCode != 200) {
+                return null;
+            }
+
+            InputStream response = connection.getInputStream();
+            BufferedReader bR = new BufferedReader(new InputStreamReader(response));
             String line = "";
 
             StringBuilder responseStrBuilder = new StringBuilder();

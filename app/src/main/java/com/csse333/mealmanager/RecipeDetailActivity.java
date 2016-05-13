@@ -90,7 +90,7 @@ public class RecipeDetailActivity extends Activity {
             likeRecipe.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String recipe_id = (String) mRecipes.get("recipe_id");
+                    String recipe_id = (int) mRecipes.get("recipe_id") + "";
                     new LikeRecipeTask(recipe_id).execute();
                 }
             });
@@ -272,21 +272,30 @@ public class RecipeDetailActivity extends Activity {
 
     }
 
-    private boolean printStatusMessage(int status) {
-        // TODO: Fill in the rest of the error displays
-        CharSequence text = "";
+    private boolean printStatusMessage(int call, int status) {
+        CharSequence text;
         switch (status) {
-            case 601:
-                // email & password don't correspond = 601
-                text = "Email & Password don't match";
+            case 404:
+                text = "Page not found!";
                 break;
-            case 701:
-                // any args are missing = 701
-                text = "One or more arguments are missing";
+            case 601:
+                text = (call == 0) ? "Recipe already liked" : "email or recipe_id doesn't exist";
+                break;
+            case 602:
+                text = "recipe_id must be an integer";
                 break;
             case 666:
                 // suspected injection attack = 666
                 text = "Your input cannot contain SQL!";
+                break;
+            case 701:
+                text = "Email or recipe_id missing";
+                break;
+            case 702:
+                text = "This isn't implemented";
+                break;
+            default:
+                text = "An error occurred";
                 break;
         }
         Toast.makeText(RecipeDetailActivity.this, text, Toast.LENGTH_SHORT).show();
@@ -306,7 +315,6 @@ public class RecipeDetailActivity extends Activity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            //TODO: Check this server call
             String charset = "UTF-8";
             String query = "";
             try {
@@ -323,7 +331,7 @@ public class RecipeDetailActivity extends Activity {
                 RecipeDetailActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        printStatusMessage(serverConnections.getStatusCode());
+                        printStatusMessage(0, serverConnections.getStatusCode());
                     }
                 });
                 return false;
@@ -369,7 +377,7 @@ public class RecipeDetailActivity extends Activity {
                 RecipeDetailActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        printStatusMessage(serverConnections.getStatusCode());
+                        printStatusMessage(1, serverConnections.getStatusCode());
                     }
                 });
                 return false;

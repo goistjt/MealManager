@@ -287,21 +287,24 @@ public class DineOutActivity extends ListActivity implements LocationListener {
 
     }
 
-    private boolean printStatusMessage(int status) {
-        // TODO: Fill in the rest of the error displays
-        CharSequence text = "";
+    private boolean printStatusMessage(int call, int status) {
+        CharSequence text;
         switch (status) {
-            case 601:
-                // email & password don't correspond = 601
-                text = "Email & Password don't match";
+            case 602:
+                text = (call == 0) ? "Restaurant id must be an integer" : "Latitude and Longitude must be floats";
                 break;
             case 701:
-                // any args are missing = 701
-                text = "One or more arguments are missing";
+                text = "Restaurant id is missing";
+                break;
+            case 702:
+                text = "Too many arguments provided";
                 break;
             case 666:
                 // suspected injection attack = 666
                 text = "Your input cannot contain SQL!";
+                break;
+            default:
+                text = "An error occurred";
                 break;
         }
         Toast.makeText(DineOutActivity.this, text, Toast.LENGTH_SHORT).show();
@@ -329,7 +332,7 @@ public class DineOutActivity extends ListActivity implements LocationListener {
                 DineOutActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        printStatusMessage(serverConnections.getStatusCode());
+                        printStatusMessage(0, serverConnections.getStatusCode());
                     }
                 });
                 return false;
@@ -378,7 +381,7 @@ public class DineOutActivity extends ListActivity implements LocationListener {
                 DineOutActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        printStatusMessage(serverConnections.getStatusCode());
+                        printStatusMessage(1, serverConnections.getStatusCode());
                     }
                 });
                 return false;

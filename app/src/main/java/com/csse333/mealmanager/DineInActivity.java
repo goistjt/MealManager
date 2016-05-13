@@ -232,20 +232,23 @@ public class DineInActivity extends ListActivity {
     }
 
     private boolean printStatusMessage(int status) {
-        // TODO: Fill in the rest of the error displays
-        CharSequence text = "";
+        CharSequence text;
         switch (status) {
-            case 601:
-                // email & password don't correspond = 601
-                text = "Email & Password don't match";
+            case 602:
+                text = "Recipe id must be an integer";
                 break;
             case 701:
-                // any args are missing = 701
-                text = "One or more arguments are missing";
+                text = "Recipe id missing";
+                break;
+            case 702:
+                text = "Too many arguments";
                 break;
             case 666:
                 // suspected injection attack = 666
                 text = "Your input cannot contain SQL!";
+                break;
+            default:
+                text = "An error occurred";
                 break;
         }
         Toast.makeText(DineInActivity.this, text, Toast.LENGTH_SHORT).show();
