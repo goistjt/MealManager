@@ -238,6 +238,9 @@ public class DineOutActivity extends ListActivity implements LocationListener {
                     boolean bar = r.getBoolean("has_bar");
                     boolean outdoor = r.getBoolean("outdoor_seating");
                     String price = r.getString("price_range");
+                    Object rate = r.get("avg_rating");
+
+                    String rating = (rate.equals("null")) ? rate.toString() : "";
 
                     String address = String.format("%s %s %s, %s %s", street, street2, city,
                             state, postal_code);
@@ -256,6 +259,7 @@ public class DineOutActivity extends ListActivity implements LocationListener {
                     recipe.put("has_bar", bar);
                     recipe.put("outdoor_seating", outdoor);
                     recipe.put("price", price);
+                    recipe.put("rating", rating);
 
                     // adding contact to contact list
                     restList.add(recipe);

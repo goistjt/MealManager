@@ -20,7 +20,7 @@ public class PostReviewActivity extends Activity {
     int mRestID;
     String mEmail;
     boolean hasLeftReview;
-    JSONObject mReturnedJSON;
+    JSONObject mReview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +29,12 @@ public class PostReviewActivity extends Activity {
 
         mRestID = getIntent().getExtras().getInt("rest_id");
         mEmail = getIntent().getExtras().getString("user_id");
-        //new GetReviewTask().execute();
+        hasLeftReview = getIntent().getExtras().getString("type").equals("edit");
+        try {
+            mReview = new JSONObject(getIntent().getExtras().getString("review"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         final RatingBar ratingBar = (RatingBar) findViewById(R.id.post_review_ratingBar);
         final EditText reviewText = (EditText) findViewById(R.id.post_review_editText);
@@ -37,8 +42,8 @@ public class PostReviewActivity extends Activity {
 
         if (hasLeftReview) {
             try {
-                ratingBar.setRating(mReturnedJSON.getInt("rating"));
-                reviewText.setText(mReturnedJSON.getString("content"));
+                ratingBar.setRating(mReview.getInt("rating"));
+                reviewText.setText(mReview.getString("content"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -47,13 +52,13 @@ public class PostReviewActivity extends Activity {
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int rating = ratingBar.getNumStars();
+                int rating = (int) ratingBar.getRating();
                 String review = String.valueOf(reviewText.getText());
-                //TODO: Implement server call to post review then route back to home screen
+                //TODO: Implement server call to post updated review then route back to home screen
                 if (hasLeftReview) {
                     //new UpdateReviewTask(rating, review).execute();
                 }
-                //new PostReviewTask(rating, review).execute();
+                new PostReviewTask(rating, review).execute();
             }
         });
     }
@@ -132,7 +137,6 @@ public class PostReviewActivity extends Activity {
         }
     }
 
-
     public class PostReviewTask extends AsyncTask<Void, Void, Boolean> {
 
         private int rating;
@@ -181,28 +185,6 @@ public class PostReviewActivity extends Activity {
 
                 finish();
             }
-        }
-    }
-
-    public class GetReviewTask extends AsyncTask<Void, Void, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            String query = String.format("Review?email=%s&rest_id=%s", mEmail, mRestID);
-
-            final ServerConnections sc = new ServerConnections();
-            mReturnedJSON = sc.getRequest(query);
-            if (mReturnedJSON == null) {
-                PostReviewActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        printStatusMessage(sc.getStatusCode());
-                    }
-                });
-                return false;
-            }
-            hasLeftReview = true;
-            return true;
         }
     }
 }

@@ -24,6 +24,13 @@
             android:text="@string/view_shopping_list"/>
 
         <Button
+            android:id="@+id/add_recipe_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/add_recipe"/>
+
+        <Button
             android:id="@+id/dine_in_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

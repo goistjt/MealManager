@@ -293,7 +293,7 @@ public class DineInActivity extends ListActivity {
                 intent.putExtra("user_id", mEmail);
                 intent.putExtra("recipe_details", mRecipe);
                 intent.putExtra("ingredients", mReturnedJSON.toString());
-                intent.putExtra("type", "all");
+                intent.putExtra("type", mType);
                 startActivity(intent);
             }
         }

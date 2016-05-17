@@ -3,15 +3,9 @@ package com.csse333.mealmanager;
 import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.IntentCompat;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,12 +19,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ShoppingListActivity extends ListActivity {
 
-    private ProgressDialog pDialog;
     private String mEmail;
     private JSONObject mIngredients;
     private ListView mListView;
@@ -43,21 +38,19 @@ public class ShoppingListActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_list_view);
-        addActionBar(getActionBar());
 
         Bundle extras = getIntent().getExtras();
         assert extras != null;
         mEmail = extras.getString("user_id");
         try {
             mIngredients = new JSONObject(getIntent().getStringExtra("ingredients"));
-            System.out.println(mIngredients);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         ingredientList = new ArrayList<>();
         mListView = getListView();
-
+        /* TODO: uncomment this once working
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -72,13 +65,13 @@ public class ShoppingListActivity extends ListActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 String ingredient = (String) ingredientList.get(position).get("name");
-                // TODO : uncomment this after checking server call below
-                // new RemoveItemTask(ingredient).execute();
+                new RemoveItemTask(ingredient).execute();
                 return true;
             }
-        });
+        });*/
 
         new getList().execute();
+        addActionBar(getActionBar());
     }
 
 
@@ -106,32 +99,21 @@ public class ShoppingListActivity extends ListActivity {
 
         final Button actionBarClearList = (Button) findViewById(R.id.menu_item_clear_shopping_list);
         actionBarClearList.setMaxHeight(actionBar.getHeight());
+        actionBarClearList.setVisibility(View.GONE);
+        // TODO : remove the line above when working
         actionBarClearList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for (HashMap<String, Object> ingr : ingredientList) {
-                    String name = (String) ingr.get("name");
-                    // TODO : uncomment this after verifying server call below
-                    // new RemoveAllTask().execute();
-                }
+                new RemoveAllTask().execute();
             }
         });
-
+        if (ingredientList.isEmpty()) {
+            actionBarClearList.setVisibility(View.GONE);
+        }
         findViewById(R.id.menu_search_layout).setVisibility(View.GONE);
     }
 
     private class getList extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Showing progress dialog
-            pDialog = new ProgressDialog(ShoppingListActivity.this);
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-
-        }
 
         @Override
         protected Void doInBackground(Void... arg0) {
@@ -164,13 +146,9 @@ public class ShoppingListActivity extends ListActivity {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             // Dismiss the progress dialog
-            if (pDialog.isShowing())
-                pDialog.dismiss();
             /**
              * Updating parsed JSON data into ListView
              * */
-            System.out.println("list: " + ingredientList.toString());
-            System.out.println("is this working?");
             ListAdapter adapter = new SimpleAdapter(
                     ShoppingListActivity.this,
                     ingredientList,
@@ -179,7 +157,6 @@ public class ShoppingListActivity extends ListActivity {
                     new int[]{R.id.name});
             setListAdapter(adapter);
         }
-
     }
 
     private boolean printStatusMessage(int status) {
@@ -200,8 +177,6 @@ public class ShoppingListActivity extends ListActivity {
                 break;
         }
         Toast.makeText(ShoppingListActivity.this, text, Toast.LENGTH_SHORT).show();
-
-        System.out.println(status);
         return (status != 200);
     }
 
@@ -214,10 +189,17 @@ public class ShoppingListActivity extends ListActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: verify this call
-            String query = String.format("ShoppingList?email=%singr=%s", mEmail, ingr);
+            String charset = "UTF-8";
+            String query = "";
+            try {
+                query = String.format("ShoppingList?email=%s&ingr=%s",
+                        URLEncoder.encode(mEmail, charset),
+                        URLEncoder.encode(ingr, charset));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
 
-            //"http://meal-manager.csse.srose-hulman.edu/RemoveIngredient"
+            //"http://meal-manager.csse.srose-hulman.edu/ShoppingList"
             final ServerConnections serverConnections = new ServerConnections();
             boolean mReturned = serverConnections.deleteRequest(query);
             if (!mReturned) {
@@ -244,10 +226,14 @@ public class ShoppingListActivity extends ListActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: verify this call
-            String query = String.format("ShoppingList?email=%s", mEmail);
-
-            //"http://meal-manager.csse.srose-hulman.edu/RemoveAllIngredients"
+            String charset = "UTF-8";
+            String query = "";
+            try {
+                query = String.format("ShoppingList?email=%s",
+                        URLEncoder.encode(mEmail, charset));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             final ServerConnections serverConnections = new ServerConnections();
             boolean mReturned = serverConnections.deleteRequest(query);
             if (!mReturned) {
@@ -294,7 +280,10 @@ public class ShoppingListActivity extends ListActivity {
         @Override
         protected void onPostExecute(final Boolean success) {
             if (success) {
+                ingredientList.clear();
+                mIngredients = mReturnedJSON;
                 new getList().execute();
+                addActionBar(getActionBar());
             }
         }
     }

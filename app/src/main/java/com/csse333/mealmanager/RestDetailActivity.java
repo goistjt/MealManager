@@ -31,6 +31,10 @@ public class RestDetailActivity extends Activity {
     private String mType;
     private HashMap<String, Object> mDetails;
     private JSONObject mMenuItems;
+    private String mRestId;
+    private boolean mReviewed;
+    private JSONObject mReview;
+    private JSONObject mReviews;
 
     ArrayList<HashMap<String, Object>> menuItemList;
     ExpandableListAdapter listAdapter;
@@ -49,6 +53,8 @@ public class RestDetailActivity extends Activity {
         mEmail = extras.getString("user_id");
         mType = extras.getString("type");
         mDetails = (HashMap<String, Object>) extras.get("rest_info");
+        mRestId = mDetails.get("rest_id").toString();
+        //System.out.println("Rest: " + mDetails);
         try {
             mMenuItems = new JSONObject(extras.get("menu_items").toString());
         } catch (JSONException e) {
@@ -62,14 +68,47 @@ public class RestDetailActivity extends Activity {
 
         expListView = (ExpandableListView) findViewById(R.id.expandableListView);
 
+        new getMenuItems().execute();
+        new getAllReviewsTask().execute();
+        //new getReviewTask().execute();
+
         Button leaveReview = (Button) findViewById(R.id.rest_details_review_button);
-        leaveReview.setOnClickListener(new View.OnClickListener() {
+        if (mReviewed) {
+            leaveReview.setText("Edit Review");
+            leaveReview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(RestDetailActivity.this, PostReviewActivity.class);
+                    intent.putExtra("rest_id", mRestId);
+                    intent.putExtra("user_id", mEmail);
+                    intent.putExtra("type", "edit");
+                    startActivity(intent);
+                }
+            });
+        } else {
+            leaveReview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(RestDetailActivity.this, PostReviewActivity.class);
+                    intent.putExtra("rest_id", mRestId);
+                    intent.putExtra("user_id", mEmail);
+                    intent.putExtra("type", "create");
+                    startActivity(intent);
+                }
+            });
+        }
+
+        Button seeReviews = (Button) findViewById(R.id.rest_details_see_reviews_button);
+        seeReviews.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int rest_id = (int) mDetails.get("rest_id");
-                Intent intent = new Intent(RestDetailActivity.this, PostReviewActivity.class);
-                intent.putExtra("rest_id", rest_id);
-                intent.putExtra("user_id", mEmail);
+                Intent intent = new Intent(RestDetailActivity.this, SeeReviewsActivity.class);
+                intent.putExtra("rest_id", mRestId);
+                if (mReviews.isNull("reviews")) {
+                    intent.putExtra("reviews", "");
+                } else {
+                    intent.putExtra("reviews", mReviews.toString());
+                }
                 startActivity(intent);
             }
         });
@@ -86,8 +125,6 @@ public class RestDetailActivity extends Activity {
                 }
             });
         }
-
-        new getMenuItems().execute();
     }
 
 
@@ -153,6 +190,14 @@ public class RestDetailActivity extends Activity {
             ((TextView) findViewById(R.id.price)).setText(price);
         }
 
+        String ratingString = mDetails.get("rating").toString();
+        if (ratingString.equals("")) {
+            setGone((TextView) findViewById(R.id.rating));
+        } else {
+            String price = "Average Rating: " + ratingString;
+            ((TextView) findViewById(R.id.rating)).setText(price);
+        }
+
         String tags = "";
         if ((boolean) mDetails.get("kid_friendly")) {
             tags += "Kid Friendly";
@@ -209,10 +254,10 @@ public class RestDetailActivity extends Activity {
                     ingredient.put("gluten", gluten);
                     ingredient.put("name", name);
 
-                    // adding ingredient to ingredient list
+                    // adding to menu item list
                     menuItemList.add(ingredient);
 
-                    // adding ingredient to expandable list view
+                    // adding to expandable list view
                     List<String> details = new ArrayList<>();
                     details.add("Average Price: " + price);
                     details.add("Type: " + type);
@@ -329,6 +374,72 @@ public class RestDetailActivity extends Activity {
             if (success) {
                 CharSequence text = "Restaurant Liked!";
                 Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private class getAllReviewsTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // post
+            String charset = "UTF-8";
+            String query = "";
+            try {
+                query = String.format("Review?rest_id=%s",
+                        URLEncoder.encode(mRestId, charset));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            final ServerConnections serverConnections = new ServerConnections();
+            mReviews = serverConnections.getRequest(query);
+            if (mReviews == null) {
+                RestDetailActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
+    }
+
+    private class getReviewTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // post
+            String charset = "UTF-8";
+            String query = "";
+            try {
+                query = String.format("Review?email=%s&rest_id=%s",
+                        URLEncoder.encode(mEmail, charset),
+                        URLEncoder.encode(mRestId, charset));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            final ServerConnections serverConnections = new ServerConnections();
+            mReview = serverConnections.getRequest(query);
+            if (mReview == null) {
+                RestDetailActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        printStatusMessage(serverConnections.getStatusCode());
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (success) {
+                mReviewed = true;
             }
         }
     }

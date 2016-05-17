@@ -68,6 +68,16 @@
         android:textSize="20sp"/>
 
     <TextView
+        android:id="@+id/rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip"
+        android:textAlignment="center"
+        android:textColor="#5d5d5d"
+        android:textSize="20sp"/>
+
+    <TextView
         android:id="@+id/tags"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -95,8 +105,15 @@
             android:id="@+id/rest_details_review_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:text="@string/leave_review"/>
+
+        <Button
+            android:id="@+id/rest_details_see_reviews_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/see_reviews"/>
 
         <Button
             android:id="@+id/rest_details_like_button"

@@ -29,7 +29,17 @@ public class TaskSelectActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         assert extras != null;
         mEmail = extras.getString("user_id");
-        System.out.println(mEmail);
+
+        Button addRecipe = (Button) findViewById(R.id.add_recipe_button);
+        addRecipe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TaskSelectActivity.this, AddRecipeActivity.class);
+                intent.putExtra("user_id", mEmail);
+                startActivity(intent);
+            }
+        });
+        addRecipe.setVisibility(View.GONE);
 
         Button dineIn = (Button) findViewById(R.id.dine_in_button);
         dineIn.setOnClickListener(new View.OnClickListener() {
@@ -62,8 +72,7 @@ public class TaskSelectActivity extends Activity {
         favoriteRecipes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: uncomment this after checking server call
-                //new FavoriteRecipesTask().execute();
+                new FavoriteRecipesTask().execute();
             }
         });
 
@@ -71,8 +80,7 @@ public class TaskSelectActivity extends Activity {
         favoriteRests.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: uncomment this after checking server call
-                //new FavoriteRestsTask().execute();
+                new FavoriteRestsTask().execute();
             }
         });
     }
@@ -246,7 +254,7 @@ public class TaskSelectActivity extends Activity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            String query = String.format("Likes?email=%s", mEmail);
+            String query = String.format("RecipeLike?email=%s", mEmail);
 
             final ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query);
@@ -278,7 +286,7 @@ public class TaskSelectActivity extends Activity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            String query = String.format("Enjoys?email=%s", mEmail);
+            String query = String.format("RestEnjoy?email=%s", mEmail);
 
             final ServerConnections serverConnections = new ServerConnections();
             mReturnedJSON = serverConnections.getRequest(query);

@@ -39,6 +39,9 @@
     <string name="leave_review">Leave a Review</string>
     <string name="enter_your_review_here">Enter your Review Here</string>
     <string name="post_review">Post Review</string>
+    <string name="add_recipe">Create Recipe</string>
+    <string name="see_reviews">Reviews</string>
+    <string name="see_reviews_no_reviews">There aren\'t any reviews for this restaurant!</string>
     <string-array name="search_type_array_dine_in">
         <item>Name</item>
         <item>Type</item>
