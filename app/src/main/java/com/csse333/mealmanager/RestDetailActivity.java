@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.content.IntentCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ public class RestDetailActivity extends Activity {
     private boolean mReviewed;
     private JSONObject mReview;
     private JSONObject mReviews;
+    private boolean mFinished = false;
 
     ArrayList<HashMap<String, Object>> menuItemList;
     ExpandableListAdapter listAdapter;
@@ -54,7 +56,6 @@ public class RestDetailActivity extends Activity {
         mType = extras.getString("type");
         mDetails = (HashMap<String, Object>) extras.get("rest_info");
         mRestId = mDetails.get("rest_id").toString();
-        //System.out.println("Rest: " + mDetails);
         try {
             mMenuItems = new JSONObject(extras.get("menu_items").toString());
         } catch (JSONException e) {
@@ -70,38 +71,13 @@ public class RestDetailActivity extends Activity {
 
         new getMenuItems().execute();
         new getAllReviewsTask().execute();
-        //new getReviewTask().execute();
-
-        Button leaveReview = (Button) findViewById(R.id.rest_details_review_button);
-        if (mReviewed) {
-            leaveReview.setText("Edit Review");
-            leaveReview.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(RestDetailActivity.this, PostReviewActivity.class);
-                    intent.putExtra("rest_id", mRestId);
-                    intent.putExtra("user_id", mEmail);
-                    intent.putExtra("type", "edit");
-                    startActivity(intent);
-                }
-            });
-        } else {
-            leaveReview.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(RestDetailActivity.this, PostReviewActivity.class);
-                    intent.putExtra("rest_id", mRestId);
-                    intent.putExtra("user_id", mEmail);
-                    intent.putExtra("type", "create");
-                    startActivity(intent);
-                }
-            });
-        }
+        new getReviewTask().execute();
 
         Button seeReviews = (Button) findViewById(R.id.rest_details_see_reviews_button);
         seeReviews.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                new getAllReviewsTask().execute();
                 Intent intent = new Intent(RestDetailActivity.this, SeeReviewsActivity.class);
                 intent.putExtra("rest_id", mRestId);
                 if (mReviews.isNull("reviews")) {
@@ -127,6 +103,35 @@ public class RestDetailActivity extends Activity {
         }
     }
 
+    public void updateButton() {
+        Button leaveReview = (Button) findViewById(R.id.rest_details_review_button);
+        if (mReviewed) {
+            leaveReview.setText("Edit Review");
+            leaveReview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(RestDetailActivity.this, PostReviewActivity.class);
+                    intent.putExtra("rest_id", mRestId);
+                    intent.putExtra("user_id", mEmail);
+                    intent.putExtra("type", "edit");
+                    intent.putExtra("review", mReview.toString());
+                    startActivity(intent);
+                }
+            });
+        } else {
+            leaveReview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(RestDetailActivity.this, PostReviewActivity.class);
+                    intent.putExtra("rest_id", mRestId);
+                    intent.putExtra("user_id", mEmail);
+                    intent.putExtra("type", "create");
+                    intent.putExtra("review", "");
+                    startActivity(intent);
+                }
+            });
+        }
+    }
 
     public void addActionBar(ActionBar actionBar) {
         final ViewGroup actionBarLayout = (ViewGroup) getLayoutInflater().inflate(
@@ -438,9 +443,10 @@ public class RestDetailActivity extends Activity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            if (success) {
+            if (success && !mReview.toString().equals("{}")) {
                 mReviewed = true;
             }
+            updateButton();
         }
     }
 }

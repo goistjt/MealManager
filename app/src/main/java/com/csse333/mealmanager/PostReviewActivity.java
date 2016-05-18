@@ -17,7 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 public class PostReviewActivity extends Activity {
-    int mRestID;
+    String mRestID;
     String mEmail;
     boolean hasLeftReview;
     JSONObject mReview;
@@ -27,13 +27,19 @@ public class PostReviewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_review);
 
-        mRestID = getIntent().getExtras().getInt("rest_id");
+        mRestID = getIntent().getExtras().getString("rest_id");
         mEmail = getIntent().getExtras().getString("user_id");
-        hasLeftReview = getIntent().getExtras().getString("type").equals("edit");
-        try {
-            mReview = new JSONObject(getIntent().getExtras().getString("review"));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        hasLeftReview = "edit".equals(getIntent().getExtras().getString("type"));
+        if (hasLeftReview) {
+            try {
+                if (getIntent().getExtras().getString("review") != null) {
+                    mReview = new JSONObject(getIntent().getExtras().getString("review"));
+                    mReview = new JSONObject(mReview.get("reviews").toString());
+                    System.out.println(mReview.toString());
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         final RatingBar ratingBar = (RatingBar) findViewById(R.id.post_review_ratingBar);
@@ -66,8 +72,11 @@ public class PostReviewActivity extends Activity {
     private boolean printStatusMessage(int status) {
         CharSequence text;
         switch (status) {
+            case 601:
+                text = "You have already left a review for this restaurant";
+                break;
             case 602:
-                text = "An error occurred in the Database";
+                text = "An error occurred in the database";
                 break;
             case 701:
                 text = "Email or recipe id is missing";
