@@ -118,7 +118,7 @@ public class RegistrationActivity extends Activity {
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (!TextUtils.isEmpty(password) || !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -255,8 +255,7 @@ public class RegistrationActivity extends Activity {
                 Toast toast = Toast.makeText(getApplicationContext(), text, duration);
                 toast.show();
 
-                Intent intent = new Intent(RegistrationActivity.this, TaskSelectActivity.class);
-                intent.putExtra("user_id", mEmail);
+                Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
             } else {
