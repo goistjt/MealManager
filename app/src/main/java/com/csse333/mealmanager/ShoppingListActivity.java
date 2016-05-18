@@ -101,12 +101,12 @@ public class ShoppingListActivity extends ListActivity {
         actionBarClearList.setMaxHeight(actionBar.getHeight());
         actionBarClearList.setVisibility(View.GONE);
         // TODO : remove the line above when working
-        actionBarClearList.setOnClickListener(new View.OnClickListener() {
+        /*actionBarClearList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new RemoveAllTask().execute();
             }
-        });
+        });*/
         if (ingredientList.isEmpty()) {
             actionBarClearList.setVisibility(View.GONE);
         }
