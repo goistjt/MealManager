@@ -62,7 +62,6 @@ public class PostReviewActivity extends Activity {
                 String review = String.valueOf(reviewText.getText());
                 if (hasLeftReview) {
                     new UpdateReviewTask(rating, review).execute();
-
                 } else {
                     new PostReviewTask(rating, review).execute();
                 }
@@ -141,7 +140,7 @@ public class PostReviewActivity extends Activity {
                 int duration = Toast.LENGTH_SHORT;
                 Toast toast = Toast.makeText(getApplicationContext(), text, duration);
                 toast.show();
-
+                setResult(RESULT_OK);
                 finish();
             }
         }
@@ -192,7 +191,7 @@ public class PostReviewActivity extends Activity {
                 int duration = Toast.LENGTH_SHORT;
                 Toast toast = Toast.makeText(getApplicationContext(), text, duration);
                 toast.show();
-
+                setResult(RESULT_OK);
                 finish();
             }
         }

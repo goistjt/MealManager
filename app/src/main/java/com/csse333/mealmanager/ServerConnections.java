@@ -45,7 +45,6 @@ public class ServerConnections {
         return new JSONObject();
     }
 
-    // TODO: check this call
     public JSONObject updateRequest(String query) {
         HttpURLConnection connection = null;
         try {
