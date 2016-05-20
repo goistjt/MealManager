@@ -2,12 +2,10 @@ package com.csse333.mealmanager;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.content.IntentCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +23,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class RestDetailActivity extends Activity {
 
@@ -70,14 +69,19 @@ public class RestDetailActivity extends Activity {
         expListView = (ExpandableListView) findViewById(R.id.expandableListView);
 
         new getMenuItems().execute();
-        new getAllReviewsTask().execute();
         new getReviewTask().execute();
 
         Button seeReviews = (Button) findViewById(R.id.rest_details_see_reviews_button);
         seeReviews.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new getAllReviewsTask().execute();
+                AsyncTask<Void, Void, Boolean> task = new getAllReviewsTask();
+                task.execute();
+                try {
+                    task.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
                 Intent intent = new Intent(RestDetailActivity.this, SeeReviewsActivity.class);
                 intent.putExtra("rest_id", mRestId);
                 if (mReviews.isNull("reviews")) {
@@ -103,8 +107,9 @@ public class RestDetailActivity extends Activity {
         }
     }
 
+    static final int LEAVE_REVIEW_REQUEST = 1;
     public void updateButton() {
-        Button leaveReview = (Button) findViewById(R.id.rest_details_review_button);
+        final Button leaveReview = (Button) findViewById(R.id.rest_details_review_button);
         if (mReviewed) {
             leaveReview.setText("Edit Review");
             leaveReview.setOnClickListener(new View.OnClickListener() {
@@ -115,7 +120,7 @@ public class RestDetailActivity extends Activity {
                     intent.putExtra("user_id", mEmail);
                     intent.putExtra("type", "edit");
                     intent.putExtra("review", mReview.toString());
-                    startActivity(intent);
+                    startActivityForResult(intent, LEAVE_REVIEW_REQUEST);
                 }
             });
         } else {
@@ -127,9 +132,28 @@ public class RestDetailActivity extends Activity {
                     intent.putExtra("user_id", mEmail);
                     intent.putExtra("type", "create");
                     intent.putExtra("review", "");
-                    startActivity(intent);
+                    startActivityForResult(intent, LEAVE_REVIEW_REQUEST);
                 }
             });
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        System.out.println("in onActivityResult");
+        if (requestCode == LEAVE_REVIEW_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                // the user left a review
+                AsyncTask<Void, Void, Boolean> task = new getReviewTask();
+                task.execute();
+                try {
+                    task.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+                updateButton();
+            }
         }
     }
 
@@ -410,6 +434,12 @@ public class RestDetailActivity extends Activity {
             }
             return true;
         }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            System.out.println("finished");
+            mFinished = true;
+        }
     }
 
     private class getReviewTask extends AsyncTask<Void, Void, Boolean> {
@@ -446,6 +476,7 @@ public class RestDetailActivity extends Activity {
             if (success && !mReview.toString().equals("{}")) {
                 mReviewed = true;
             }
+            System.out.println("reviewed: " + mReviewed + " - " + mReview);
             updateButton();
         }
     }

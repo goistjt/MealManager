@@ -50,7 +50,6 @@ public class ShoppingListActivity extends ListActivity {
 
         ingredientList = new ArrayList<>();
         mListView = getListView();
-        /* TODO: uncomment this once working
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -68,7 +67,7 @@ public class ShoppingListActivity extends ListActivity {
                 new RemoveItemTask(ingredient).execute();
                 return true;
             }
-        });*/
+        });
 
         new getList().execute();
         addActionBar(getActionBar());
@@ -99,14 +98,12 @@ public class ShoppingListActivity extends ListActivity {
 
         final Button actionBarClearList = (Button) findViewById(R.id.menu_item_clear_shopping_list);
         actionBarClearList.setMaxHeight(actionBar.getHeight());
-        actionBarClearList.setVisibility(View.GONE);
-        // TODO : remove the line above when working
-        /*actionBarClearList.setOnClickListener(new View.OnClickListener() {
+        actionBarClearList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new RemoveAllTask().execute();
             }
-        });*/
+        });
         if (ingredientList.isEmpty()) {
             actionBarClearList.setVisibility(View.GONE);
         }

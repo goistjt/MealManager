@@ -60,11 +60,12 @@ public class PostReviewActivity extends Activity {
             public void onClick(View v) {
                 int rating = (int) ratingBar.getRating();
                 String review = String.valueOf(reviewText.getText());
-                //TODO: Implement server call to post updated review then route back to home screen
                 if (hasLeftReview) {
-                    //new UpdateReviewTask(rating, review).execute();
+                    new UpdateReviewTask(rating, review).execute();
+
+                } else {
+                    new PostReviewTask(rating, review).execute();
                 }
-                new PostReviewTask(rating, review).execute();
             }
         });
     }
