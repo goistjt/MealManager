@@ -13,28 +13,18 @@ import android.widget.Button;
 import org.json.JSONObject;
 
 
-public class AddRecipeActivity extends Activity {
+public class AddIngredientActivity extends Activity {
     String mEmail;
     JSONObject mReturnedJSON;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_recipe);
+        setContentView(R.layout.activity_add_ingr);
         addActionBar(getActionBar());
 
         mEmail = getIntent().getExtras().getString("user_id");
 
-        Button addIngr = (Button) findViewById(R.id.add_ingr_button);
-        addIngr.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AddRecipeActivity.this, AddIngredientActivity.class);
-                intent.putExtra("user_id", mEmail);
-                startActivity(intent);
-                finish();
-            }
-        });
     }
 
     public void addActionBar(ActionBar actionBar) {
@@ -53,7 +43,7 @@ public class AddRecipeActivity extends Activity {
         actionBarLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent logOutIntent = new Intent(AddRecipeActivity.this, LoginActivity.class);
+                Intent logOutIntent = new Intent(AddIngredientActivity.this, LoginActivity.class);
                 ComponentName cn = logOutIntent.getComponent();
                 Intent mainIntent = IntentCompat.makeRestartActivityTask(cn);
                 startActivity(mainIntent);

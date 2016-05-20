@@ -23,8 +23,7 @@
     <string name="dine_in">Dine In</string>
     <string name="dine_out">Dine Out</string>
     <string name="empty_list">Nothing matches your search!</string>
-    <string name="add_to_shopping_list">Add to Shopping List</string>
-    <string name="rest_details_view_menu_button">View Menu</string>
+    <string name="add_recipe">Create Recipe</string>
 
     <!-- String related to menu -->
     <string name="menu_item_log_out">Log Out</string>
@@ -33,15 +32,45 @@
     <string name="action_bar_name_radio_button">Name</string>
     <string name="action_bar_type_radio_button">Type</string>
     <string name="action_bar_remove_all_from_shopping_list">Remove All</string>
+
+    <!-- Strings related to Recipes -->
+    <string name="add_to_shopping_list">Add to Shopping List</string>
     <string name="like">Like</string>
     <string name="favorite_recipes">Favorite Recipes</string>
+
+    <!-- Strings related to restaurants -->
     <string name="favorite_restaurants">Favorite Restaurants</string>
-    <string name="leave_review">Leave a Review</string>
-    <string name="enter_your_review_here">Enter your Review Here</string>
-    <string name="post_review">Post Review</string>
-    <string name="add_recipe">Create Recipe</string>
     <string name="see_reviews">Reviews</string>
     <string name="see_reviews_no_reviews">There aren\'t any reviews for this restaurant!</string>
+    <string name="leave_review">Leave a Review</string>
+    <string name="post_review">Post Review</string>
+    <string name="enter_your_review_here">Enter your Review Here</string>
+
+    <!-- strings related to adding recipe -->
+    <string name="enter_directions_here">Enter cooking instructions here</string>
+    <string name="add_ingr">Add Ingredients</string>
+    <string name="recipe_name">Recipe Name</string>
+    <string name="total_time_min">Total time (minutes)</string>
+    <string name="add_recipe_vegan">Vegan</string>
+    <string name="add_recipe_dairy_free">Dairy-Free</string>
+    <string name="add_recipe_vegetarian">Vegetarian</string>
+    <string name="add_recipe_gluten_free">Gluten-Free</string>
+    <string name="prompt_ingr_search">Search Ingredient Name</string>
+    <string name="add_recipe_create_new_ingredient">Create New Ingredient</string>
+    <string-array name="add_recipe_types">
+        <item>American</item>
+        <item>Italian</item>
+        <item>Thai</item>
+        <item>German</item>
+        <item>Indian</item>
+        <item>Japanese</item>
+        <item>Chinese</item>
+        <item>Mexican</item>
+        <item>Other</item>
+    </string-array>
+
+
+    <!-- search string arrays -->
     <string-array name="search_type_array_dine_in">
         <item>Name</item>
         <item>Type</item>
@@ -52,5 +81,4 @@
         <item>Nearby</item>
     </string-array>
 
-    <!-- Various other strings -->
 </resources>

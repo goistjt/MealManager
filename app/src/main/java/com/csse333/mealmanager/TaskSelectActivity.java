@@ -83,6 +83,7 @@ public class TaskSelectActivity extends Activity {
                 new FavoriteRestsTask().execute();
             }
         });
+
     }
 
     public void addActionBar(ActionBar actionBar) {

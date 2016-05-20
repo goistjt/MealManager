@@ -10,12 +10,29 @@
         <item name="android:spinnerDropDownItemStyle">@style/SpinnerItem.DropDownItem</item>
     </style>
 
+    <style name="AppTheme2" parent="android:Theme.Holo.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:spinnerItemStyle">@style/SpinnerItem2</item>
+        <item name="android:spinnerDropDownItemStyle">@style/SpinnerItem2.DropDownItem</item>
+    </style>
+
     <style name="SpinnerItem" parent="@android:style/Widget.TextView.SpinnerItem">
         <item name="android:textColor">@color/textColor</item>
     </style>
 
     <style name="SpinnerItem.DropDownItem" parent="android:style/Widget.DropDownItem.Spinner">
         <item name="android:textColor">@color/textColor</item>
+    </style>
+
+    <style name="SpinnerItem2" parent="@android:style/Widget.TextView.SpinnerItem">
+        <item name="android:textColor">@android:color/secondary_text_light</item>
+    </style>
+
+    <style name="SpinnerItem2.DropDownItem" parent="android:style/Widget.DropDownItem.Spinner">
+        <item name="android:textColor">@android:color/secondary_text_light</item>
     </style>
 
 </resources>

@@ -11,30 +11,91 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.csse333.mealmanager.PostReviewActivity">
 
-    <RatingBar
-        android:id="@+id/post_review_ratingBar"
-        android:layout_width="wrap_content"
+    <EditText
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="8dp"
-        android:numStars="5"
-        android:rating="0"
-        android:stepSize=".5"/>
+        android:id="@+id/name_editText"
+        android:hint="@string/recipe_name"
+        android:layout_gravity="center_horizontal"
+        android:textColorHint="@android:color/secondary_text_light"
+        android:textColor="@android:color/secondary_text_light"
+        android:textSize="20sp" />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/type_spinner"
+        android:entries="@array/add_recipe_types"
+        android:textColor="@color/textColor"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.1" />
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="3"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/total_time_min"
+            android:id="@+id/textView"
+            android:labelFor="@+id/minutes_editText"/>
+
+        <EditText
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/minutes_editText"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@android:color/secondary_text_light"
+            android:textColorHint="@android:color/secondary_text_light" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_recipe_vegan"
+            android:id="@+id/vegan_checkBox" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_recipe_dairy_free"
+            android:id="@+id/dairy_checkBox" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_recipe_vegetarian"
+            android:id="@+id/vegetarian_checkBox" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_recipe_gluten_free"
+            android:id="@+id/gluten_checkBox" />
+
+    </GridLayout>
 
     <EditText
-        android:id="@+id/post_review_editText"
+        android:id="@+id/cooking_instr_editText"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="top"
-        android:hint="@string/enter_your_review_here"
-        android:inputType="textMultiLine"/>
+        android:hint="@string/enter_directions_here"
+        android:inputType="textMultiLine"
+        android:textColor="@android:color/secondary_text_light"
+        android:textColorHint="@android:color/secondary_text_light" />
 
     <Button
-        android:id="@+id/post_review_button"
+        android:id="@+id/add_ingr_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:text="@string/post_review"/>
+        android:layout_gravity="center_horizontal"
+        android:text="@string/add_ingr"/>
 </LinearLayout>
